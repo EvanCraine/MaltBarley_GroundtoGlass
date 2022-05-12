@@ -1,0 +1,3665 @@
+---
+title: "Analysis of Screener, Rank, Open Description and CATA"
+author: "Evan Craine"
+date: "7/27/2020"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+```{r, include=F}
+# Clean Workspace
+rm(list=ls())
+```
+
+```{r setup, include=FALSE,cache=FALSE}
+knitr::opts_chunk$set(message=F,warning=F,echo=T,fig_height=10,fig_width=7,cache = F)
+```
+
+```{r, message=F, warning=F}
+library (tidyr)
+library (dplyr)
+library(lme4)
+library(afex)
+library(broom)
+library(agricolae)
+library(cluster)
+library(grDevices)
+library(psych)
+library(car)
+library(ggpubr)
+library(lsmeans)
+library(multcompView)
+library(tidytext)
+library(factoextra)
+library(SensoMineR)
+```
+
+```{r, include=F}
+
+# Set WD
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+dir()
+```
+
+# Round 2
+```{r, message = F, warning = F}
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+#BF2 = read.csv("BF_Round2.csv", header = T) outdated after coding new terms from open description
+BF2 = read.csv("BF2_Round2_wDesc.csv", header = T) 
+```
+
+# Rank is already in long format
+
+# Panel Composition 
+## Read in questionnaire
+```{r,message=F,warning=F}
+BF2.quest = read.csv("BF_Round2_Questionnaire.csv", header=T)
+
+str(BF2.quest)
+BF2.quest$Panelist <- as.factor(BF2.quest$Panelist)
+BF2.quest$Gender <- as.factor(BF2.quest$Gender)
+```
+## n = 138
+```{r, message = F, warning = F}
+length(BF2.quest$Panelist)
+levels(BF2.quest$Panelist)
+
+describe(BF2.quest)
+```
+
+n = 138 (Only panelists that we have questionnaire and ballot for) (added three from round 1)
+
+## Gender
+```{r, message = F, warning = F}
+table(BF2.quest$Gender)
+prop.table(table(BF2.quest$Gender))
+
+```
+
+## Age Range
+```{r, message = F, warning = F}
+table(BF2.quest$AgeRange)
+prop.table(table(BF2.quest$AgeRange))
+
+```
+
+## Race/Ethnic
+```{r, message = F, warning = F}
+table(BF2.quest$RaceEthnic)
+prop.table(table(BF2.quest$RaceEthnic))
+# coded those that circled two options as other
+
+```
+
+## How often do you drink beer?
+```{r, message = F, warning = F}
+prop.table(table(BF2.quest$Freq))
+
+```
+
+## How many servings on average (bottles, pints, glasses, ~12oz.) do you drink each time?
+```{r, message = F, warning = F}
+prop.table(table(BF2.quest$Serv))
+
+```
+
+## Agreeing Statements (For the following four questions please indicate the option that best reflects your perspective)
+### I have a strong preference for one style of beer (e.g Lager, IPA)
+```{r, message = F, warning = F}
+prop.table(table(BF2.quest$PrefOneStyle))
+
+```
+
+### It is important to me that beer is brewed with local ingredients
+```{r, message = F, warning = F}
+table(BF2.quest$ImpLocalIng)
+prop.table(table(BF2.quest$ImpLocalIng))
+
+```
+
+### I would pay more for a beer if I knew it supported local farmers
+```{r, message = F, warning = F}
+prop.table(table(BF2.quest$PayLocal))
+
+```
+
+
+### Because of this tasting project, I am more aware of the opportunity for local brewers to partner with local grain farmers
+```{r, message = F, warning = F}
+table(BF2.quest$AwareLocalOpp)
+prop.table(table(BF2.quest$AwareLocalOpp))
+
+# Panelist 26, 129 were zero
+## 26 = 
+## 129 = Slightly Agree
+```
+
+### What factors affects your choice the most when buying a beer? Please select all that apply
+```{r, message = F, warning = F}
+# code this like CATA
+library(dplyr)
+colnames(BF2.quest)
+
+# select the columns we want
+BF2.quest.CATA <- BF2.quest[,c(1,13)]
+
+# convert CATA columns from factor to character
+str(BF2.quest.CATA)
+BF2.quest.CATA$SATAPurchFactors_coded <- as.character(BF2.quest.CATA$SATAPurchFactors_coded) #remove extra commas from "Notable ingredients"
+str(BF2.quest.CATA)
+
+
+# turn df into tibble
+BF2.quest.CATA = as_tibble(BF2.quest.CATA)
+str(BF2.quest.CATA)
+
+# unnest
+BF2.quest.CATA.count <- BF2.quest.CATA %>%
+  unnest_tokens(word, SATAPurchFactors_coded)
+
+# count words
+BF2.quest.CATA.count %>%
+  count(word, sort=TRUE) 
+
+# proportion
+  BF2.quest.CATA.count %>%
+  count(word, sort=TRUE) %>%
+    mutate(proportion = n / 138) 
+
+```
+
+# Rank
+
+## Descriptive Statistics
+```{r, warning = F, message = F}
+BF2 %>%
+  group_by(Genotype) %>%
+  get_summary_stats(Rank, type = "common")
+
+```
+
+Returns n, min, max, median, IQR, mean, sd, se, CI by genotype
+
+## Visualization
+```{r, warning = F, message = F}
+ggboxplot(BF2, x = "Genotype", y = "Rank", add = "jitter")
+
+```
+
+## ANOVA
+```{r, warning = F, message = F}
+aov.Rank <- aov(Rank ~ Genotype, data = BF2)
+
+summary(aov.Rank)
+out.Rank <- LSD.test(aov.Rank, "Genotype")
+out.Rank
+
+out.Rank <- LSD.test(aov.Rank, "Genotype", p.adj = "bonferroni")
+out.Rank
+
+out.Rank <- HSD.test(aov.Rank, "Genotype")
+out.Rank
+
+```
+
+## Friedman Test 
+```{r, warning = F, message = F}
+#https://www.datanovia.com/en/lessons/friedman-test-in-r/
+library(rstatix)
+res.fried <- BF2 %>% friedman_test(Rank ~ Genotype |Panelist)
+res.fried
+
+
+# effect size (Kendall's W)
+BF2 %>% friedman_effsize(Rank ~ Genotype |Panelist)
+
+#Friedman test - Rank, n = 138, statistic = 8.81, df = 3, p = 0.0319
+#Kendall's W - n = 138, effect size = 0.0213, magnitude = small
+
+```
+
+## Post-Hoc
+```{r, message=F, warning=F}
+# Multiple pairwise-comparisons
+BF2.arranged <- arrange(BF2, Panelist)
+  # the data must be correctly ordered by the blocking variable (Panelist) so that the first observation for the first genotype will be paired against the second genotype and so on  
+  
+  # Using Wilcox test
+pwc <- BF2.arranged %>%
+  wilcox_test(Rank ~ Genotype, paired = TRUE, p.adjust.method = "bonferroni") 
+  # P-values are adjusted using the Bonferroni multiple testing correction method.
+
+pwc
+
+ # Using sign test
+pwc2 <- BF2.arranged %>%
+  sign_test(Rank ~ Genotype, p.adjust.method = "bonferroni")
+
+pwc2
+
+```
+
+The rank, based on overall liking, was statistically different between the different genotypes, X2(3) = 8.56 , 0 0.0358 (Friedman test). Paired Wilcoxon signed rank test between groups did not reveal any significant differences between ranks for the genotypes; however a marginally significant difference was found between the ranks of 120.17 and 117.17 (p value = 0.059).
+
+## Nemenyi test (DescTools)
+```{r, message = F, warning = F}
+library(DescTools)
+boxplot(Rank ~ Genotype, data = BF2)
+NemenyiTest(Rank~Genotype, BF2.arranged)
+NemenyiTest(BF2$Rank, BF2$Genotype)
+NemenyiTest(Rank ~ Genotype, data = BF2)
+
+
+```
+
+
+## Friedman rank sum test w/ Nemenyi and Conover (PMCMRplus)
+```{r, message = F, warning = F}
+require(PMCMRplus)
+library(PMCMR)
+library(PMCMRplus)
+
+dir()
+BF.Rank.wide = read.csv("BF.Rank.Wide.csv")
+str(BF.Rank.wide)
+
+colnames(BF.Rank.wide)
+rankmat = as.matrix(BF.Rank.wide)
+rownames(rankmat) = rankmat[,1]
+rankmat = rankmat[,-1]
+
+dimnames(rankmat)
+is.finite(rankmat)
+
+friedmanTest(rankmat)
+
+posthoc.friedman.nemenyi.test(rankmat)
+posthoc.friedman.nemenyi.test(y=rankmat, p.adjust.method="bonferroni")
+
+
+posthoc.friedman.conover.test(y=rankmat, p.adjust="none")
+posthoc.friedman.conover.test(y=rankmat, p.adjust.method="bonferroni")
+
+friedmanTest(BF2$Rank, BF2$Genotype, BF2$Panelist)
+posthoc.friedman.nemenyi.test(BF2$Rank, BF2$Genotype, BF2$Panelist, p.ad)
+posthoc.friedman.conover.test(BF2$Rank, BF2$Genotype, BF2$Panelist, p.adjust="bonferroni")
+
+
+```
+
+Friedman chi-squared = 8.5556, df = 3, p-value = 0.03582; confirms results above. 
+
+### Visualization of Friedman Test
+```{r, warning = F, message = F}
+pwc <- pwc %>% add_xy_position(x = "Genotype")
+
+rankFigure <- ggboxplot(BF2, x = "Genotype", y = "Rank", add = "point") +
+  stat_pvalue_manual(pwc, hide.ns = TRUE) +
+  labs(
+    subtitle = get_test_label(res.fried,  detailed = TRUE),
+    caption = get_pwc_label(pwc)
+  )
+print("done plotting")
+
+rankFigure2 <- ggboxplot(BF2, x = "Genotype", y = "Rank", add = "point") +
+  stat_pvalue_manual(pwc, hide.ns = TRUE)
+print("done plotting")
+
+tiff(file="brewfest_Figure1_rank_pubReady.tiff",
+width=1100, height=1211, units="px", res=300)
+rankFigure
+dev.off()
+print("done saving")
+
+# oversize to adjust in preview
+tiff(file="brewfest_Figure1_rank_pubReady_test.tiff",
+width=2404, height=1600, units="px", res=300)
+rankFigure
+dev.off()
+print("done saving")
+
+# use excel; copy table to clipboard, open preview, cmd+N to create new from clipboard, adjust resolution to 300 and size to 1100
+```
+
+# Probit models
+## order rank (1 = most, 4 = least)
+
+## see if demo/cons patterns have a significant effect on rank
+
+# Rank
+## Screener Factors that Influence Rank
+### Gender, Age, Range
+```{r, message=F,warning=F}
+BF2.Mod = merge(BF2, BF2.quest, by = "Panelist")
+str(BF2.Mod)
+
+write.csv(BF2.Mod, "BF2_screenerVar_rank.csv")
+
+# order rank as factor
+BF2.Mod$Rank <- factor(BF2.Mod$Rank, levels = c("1", "2", "3", "4")) 
+
+# order Age Range
+levels(BF2.Mod$AgeRange)
+BF2.Mod$AgeRange<- factor(BF2.Mod$AgeRange, levels = c("21-30", "31-40", "41-50", "51-60", "61+"))
+
+# order Freq
+levels(BF2.Mod$Freq)
+BF2.Mod$Freq <- factor(BF2.Mod$Freq, levels = c("Occasionally", "Once or twice a month", "Once a week", "A few times a week", "Every day"))
+
+# Order Serv
+levels(BF2.Mod$Serv)
+BF2.Mod$Serv <- factor(BF2.Mod$Serv, levels = c( "One", "Two", "Three", "Four or more"))
+
+# Agreeing statements
+levels(BF2.Mod$PrefOneStyle)
+BF2.Mod$PrefOneStyle<- factor(BF2.Mod$PrefOneStyle, levels = c("Strongly disagree", "Disagree very much", "Moderately disagree", "Slightly disagree", "Neither disagree or agree", "Slightly agree", "Moderately agree", "Agree very much", "Extremely agree"))
+
+BF2.Mod$ImpLocalIng<- factor(BF2.Mod$ImpLocalIng, levels = c("Strongly disagree", "Disagree very much", "Moderately disagree", "Slightly disagree", "Neither disagree or agree", "Slightly agree", "Moderately agree", "Agree very much", "Extremely agree"))
+
+BF2.Mod$PayLocal<- factor(BF2.Mod$PayLocal, levels = c("Strongly disagree", "Disagree very much", "Moderately disagree", "Slightly disagree", "Neither disagree or agree", "Slightly agree", "Moderately agree", "Agree very much", "Extremely agree"))
+
+BF2.Mod$AwareLocalOpp<- factor(BF2.Mod$AwareLocalOpp, levels = c("Strongly disagree", "Disagree very much", "Moderately disagree", "Slightly disagree", "Neither disagree or agree", "Slightly agree", "Moderately agree", "Agree very much", "Extremely agree"))
+
+# order probit model
+library(MASS)
+
+
+# Age, Gender, Ethnicity
+res.log = polr(BF2.Mod$Rank ~ 
+                 BF2.Mod$AgeRange +
+                 BF2.Mod$Gender +
+                 BF2.Mod$RaceEthnic,
+               method = "probit", Hess = T)
+
+res.log
+
+summary(res.log)
+
+# store coefficients
+ctable <- coef(summary(res.log))
+ctable
+
+# calculate p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+ctable <- cbind(ctable, "p value" = p)
+ctable
+
+## round p value
+ctable2 = as.data.frame(ctable)
+ctable2$`p value` = round(ctable2$`p value`,3)
+ctable2
+
+# confidence intervals
+ci <- confint(res.log)
+ci
+
+# confidence intervals assuming normality
+confint.default(res.log) 
+
+## odds ratios
+exp(coef(res.log))
+
+exp(cbind(OR = coef(res.log), ci))
+```
+
+### Conusmption Patterns
+```{r,message=F,warning=T}
+# Freq and serv
+res.log = polr(BF2.Mod$Rank ~ 
+                 BF2.Mod$Freq +
+                 BF2.Mod$Serv,
+               method = "probit", Hess = T)
+
+res.log
+
+summary(res.log)
+
+# store coefficients
+ctable <- coef(summary(res.log))
+ctable
+
+# calculate p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+ctable <- cbind(ctable, "p value" = p)
+ctable
+
+## round p value
+ctable2 = as.data.frame(ctable)
+ctable2$`p value` = round(ctable2$`p value`,3)
+ctable2
+
+# confidence intervals
+ci <- confint(res.log)
+ci
+
+# confidence intervals assuming normality
+confint.default(res.log) 
+
+## odds ratios
+exp(coef(res.log))
+
+exp(cbind(OR = coef(res.log), ci))
+
+```
+
+```{r,message=F,warning=T}
+# Agreeing statements
+res.log = polr(BF2.Mod$Rank ~ 
+                 BF2.Mod$PrefOneStyle +
+                 BF2.Mod$ImpLocalIng +
+               BF2.Mod$PayLocal+
+               BF2.Mod$AwareLocalOpp,
+               method = "probit", Hess = T)
+
+res.log
+
+summary(res.log)
+
+# store coefficients
+ctable <- coef(summary(res.log))
+ctable
+
+# calculate p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+## combined table
+ctable <- cbind(ctable, "p value" = p)
+ctable
+
+## round p value
+ctable2 = as.data.frame(ctable)
+ctable2$`p value` = round(ctable2$`p value`,3)
+ctable2
+
+# confidence intervals
+ci <- confint(res.log)
+ci
+
+# confidence intervals assuming normality
+confint.default(res.log) 
+
+## odds ratios
+exp(coef(res.log))
+
+exp(cbind(OR = coef(res.log), ci))
+
+```
+
+# CATA - Aroma Attributes
+```{r, warning = F, message = F}
+#https://ourcodingclub.github.io/tutorials/qualitative/
+# Load required libraries
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+
+colnames(BF2)
+BF2.CATA.aroma = BF2[,c("Panelist", "Genotype", "CATA_aroma")]
+
+# Convert CATA columns form factor to character
+BF2.CATA.aroma$CATA_aroma <- as.character(BF2.CATA.aroma$CATA_aroma)
+str(BF2.CATA.aroma)
+```
+
+
+## split CATA comments
+```{r, warning = F, message = F}
+
+data("stop_words")
+
+CATA_aromatidy <- BF2.CATA.aroma %>%
+	group_by(Genotype) %>%
+	unnest_tokens(output = Aroma_attribute,
+		input = CATA_aroma) %>%
+	anti_join(stop_words, by = c("Aroma_attribute" = "word")) %>%
+	count(Aroma_attribute, sort = TRUE)
+  
+  # next lines are QAQC 
+    # only keep words that are metnion n > X times
+    # remove NA values
+#	filter(n > 1) %>% 
+#	filter(!is.na(Aroma_attribute))
+```
+
+### Visualization of CATA Text Mining 
+#### Bar Chart
+```{r, warning = F, message = F}
+(occurrence <- ggplot(CATA_aromatidy, aes(x = Aroma_attribute, y = n, fill = Genotype)) + 
+	geom_bar(stat = "identity") + 
+	coord_flip() + 
+	scale_fill_manual(values = brewer.pal(4, "Set3")) + 
+	theme_classic())
+```
+
+Fruity, earthy, floral, grassy, wppde. cereal, stale, and nutty are the most selected 
+
+
+#### Word Cloud
+```{r, warning = F, message = F}
+CATA_aromatidy %>%
+	with(wordcloud(words = Aroma_attribute, freq = n, max.words = 100))
+
+```
+
+# CATA - ALL
+```{r, warning = F, message = F}
+#https://ourcodingclub.github.io/tutorials/qualitative/
+# Load required libraries
+rm(list=ls())
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+library(tidytext)
+library(stringr)
+
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+#BF2 = read.csv("BF_Round2.csv", header = T) outdated after coding new terms from open description
+BF2 = read.csv("BF2_Round2_wDesc.csv", header = T) 
+
+
+# ignore aroma below, artifact of copy and paste
+
+colnames(BF2)
+BF2.CATA.aroma.all = BF2[,c("Panelist", "Genotype", "CATA_all")]
+
+# Convert CATA columns form factor to character
+BF2.CATA.aroma.all$CATA_all <- as.character(BF2.CATA.aroma.all$CATA_all)
+str(BF2.CATA.aroma.all)
+
+
+```
+
+## Create binary dataframe (0/1; absent/present) for CATA attributes
+```{r, warning = F, message = F}
+BF2.CATA.binary = BF2[,c("Panelist", "Genotype", "CATA_all")]
+
+
+# run the code below
+
+# change "-" to "_"
+BF2.CATA.binary <- BF2.CATA.binary %>% 
+  mutate(CATA_all = str_replace_all(CATA_all, "-", "_")) 
+
+# go back to BrewFest_allCATA_working to further clean up 
+## alcoholic was changed to alcohol... 
+##alcohol appears as irritation-alchol-none/low or hot and in aroma as alcohol
+## add to metadata as needed for resolving issues
+
+
+
+# if a keyword appears in the CATA_all_new column, put a 1 if not put a 0
+# troubleshooting
+## cannot pipe after mutate, because it will pass the results of the first mutate to the second mutate
+## need to have ignore.case = T in all if_else statements
+
+# mouthfeel
+BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_afterfeel_slippery_high = if_else(grepl("afterfeel_slippery_high",CATA_all, ignore.case = T), "1", "0")) #changed Afterfeel-Slippery to Afterfeel-Slippery-High and Afterfeel-Slippery-None to Afterfeel-Slipper-Low in BF-Round2.csv
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_afterfeel_slippery_low = if_else(grepl("afterfeel_slippery_low",CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_afterfeel_astringency_drying = if_else(grepl("afterfeel_astringency_drying", CATA_all, ignore.case = T), "1", "0"))
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_afterfeel_astringency_low = if_else(grepl("afterfeel_astringency_low", CATA_all, ignore.case = T), "1", "0"))
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_body_particulate_smooth = if_else(grepl("body_particulate_smooth", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_body_particulate_gritty = if_else(grepl("body_particulate_gritty", CATA_all, ignore.case = T), "1", "0")) 
+
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_body_density_light = if_else(grepl("body_density_light", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_body_density_heavy = if_else(grepl("body_density_heavy", CATA_all, ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_body_viscosity_thin = if_else(grepl("body_viscosity_thin", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_body_viscosity_thick = if_else(grepl("body_viscosity_thick", CATA_all, ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_effervescence_bubbledensity_dispersed = if_else(grepl("effervescence_bubbledensity_dispersed", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_effervescence_bubbledensity_compact = if_else(grepl("effervescence_bubbledensity_compact", CATA_all, ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_effervescence_bubblesize_small = if_else(grepl("effervescence_bubblesize_small", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_effervescence_bubblesize_large = if_else(grepl("effervescence_bubblesize_large", CATA_all, ignore.case = T), "1", "0")) 
+
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_irritation_alcohol_warm = if_else(grepl("irritation_alcohol_warm", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_irritation_alcohol_burning = if_else(grepl("irritation_alcohol_burning", CATA_all, ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_irritation_carbonation_tingle = if_else(grepl("irritation_carbonation_tingle", CATA_all, ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_irritation_cooling = if_else(grepl("irritation_cooling", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_irritation_spicy = if_else(grepl("irritation_spicy", CATA_all, ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(mouthfeel_irritation_spicy_burning = if_else(grepl("irritation_spicy_burning", CATA_all, ignore.case = T), "1", "0"))
+
+
+# taste
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(taste_sour = if_else(grepl("sour",CATA_all,ignore.case = T), "1", "0")) 
+     
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(taste_bitter = if_else(grepl("bitter",CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(taste_salty = if_else(grepl("salty",CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(taste_sweet = if_else(grepl("sweet",CATA_all,ignore.case = T), "1", "0"))
+  
+# aroma
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_alcoholic = if_else(grepl("alcoholic", CATA_all,ignore.case = T), "1", "0"))  #changed alcohol to alcoholic in BF_Round2.csv
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_alcoholic_rum = if_else(grepl("alcoholic_rum", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_burnt = if_else(grepl("burnt", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_burnt_coffee = if_else(grepl("burnt_coffee", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_burnt_smoke = if_else(grepl("burnt_smoke", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal = if_else(grepl("cereal", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal_biscuit = if_else(grepl("cereal_biscuit", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal_bread = if_else(grepl("cereal_bread", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal_grahamcracker = if_else(grepl("cereal_grahamcracker", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal_greenmalt = if_else(grepl("cereal_greenmalt", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal_malt = if_else(grepl("cereal_malt", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal_roastedcereal = if_else(grepl("cereal_roastedcereal", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_cereal_toast = if_else(grepl("cereal_toast", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_dairy = if_else(grepl("dairy", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_dairy_butter = if_else(grepl("dairy_butter", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_dairy_cream = if_else(grepl("dairy_cream", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_dairy_milk = if_else(grepl("dairy_milk", CATA_all,ignore.case = T), "1", "0"))   
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_earthy = if_else(grepl("earthy", CATA_all,ignore.case = T), "1", "0"))   
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_earthy_mold = if_else(grepl("earthy_mold", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_earthy_mushroom = if_else(grepl("earthy_mushroom", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_earthy_musty = if_else(grepl("earthy_musty", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_earthy_soil = if_else(grepl("earthy_soil", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_earthy_truffle = if_else(grepl("earthy_truffle", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_floral = if_else(grepl("floral", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_floral_citronella = if_else(grepl("floral_citronella", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_floral_hawthorn = if_else(grepl("floral_hawthorn", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_floral_jasmine = if_else(grepl("floral_jasmine", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_floral_perfume = if_else(grepl("floral_perfume", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_floral_rose = if_else(grepl("floral_rose", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_floral_violet = if_else(grepl("floral_violet", CATA_all,ignore.case = T), "1", "0")) 
+
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity = if_else(grepl("fruity", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_apple = if_else(grepl("fruity_apple", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_apple_cider = if_else(grepl("fruity_apple_cider", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_apple_greenapple = if_else(grepl("fruity_apple_greenapple", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_apple_sourapple = if_else(grepl("fruity_apple_sourapple", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_berry = if_else(grepl("fruity_berry", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus = if_else(grepl("fruity_citrus", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus_grapefruit = if_else(grepl("fruity_citrus_grapefruit", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus_lemon = if_else(grepl("fruity_citrus_lemon", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus_lemon_peel = if_else(grepl("fruity_citrus_lemon_peel", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus_lime = if_else(grepl("fruity_citrus_lime", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus_lime_peel = if_else(grepl("fruity_citrus_lime_peel", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus_orange = if_else(grepl("fruity_citrus_orange", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_citrus_orange_peel = if_else(grepl("fruity_citrus_orange_peel", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_coconut = if_else(grepl("fruity_coconut", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_differentfruits = if_else(grepl("fruity_differentfruits", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_melon = if_else(grepl("fruity_melon", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_pear = if_else(grepl("fruity_pear", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_stonefruit = if_else(grepl("fruity_stonefruit", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_stonefruit_apricot = if_else(grepl("fruity_stonefruit_apricot", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_stonefruit_peach = if_else(grepl("fruity_stonefruit_peach", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_tropical = if_else(grepl("fruity_tropical", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_tropical_banana = if_else(grepl("fruity_tropical_banana", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_tropical_mango = if_else(grepl("fruity_tropical_mango", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_fruity_tropical_pineapple = if_else(grepl("fruity_tropical_pineapple", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_grassy = if_else(grepl("grassy", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_grassy_freshcutgrass = if_else(grepl("grassy_freshcutgrass", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_grassy_greenleaves = if_else(grepl("grassy_greenleaves", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_grassy_hay = if_else(grepl("grassy_hay", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_herbacious = if_else(grepl("herbacious", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_herbacious_oregano = if_else(grepl("herbacious_oregano", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_herbacious_rosemary = if_else(grepl("herbacious_rosemary", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_herbacious_tea = if_else(grepl("herbacious_tea", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_herbacious_thyme = if_else(grepl("herbacious_thyme", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_meaty = if_else(grepl("meaty", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_medicinal = if_else(grepl("medicinal", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_medicinal_bandaid = if_else(grepl("medicinal_bandaid", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_medicinal_burntrubber = if_else(grepl("medicinal_burntrubber", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_medicinal_rubber = if_else(grepl("medicinal_rubber", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_metallic = if_else(grepl("metallic", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_nutty = if_else(grepl("nutty", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_nutty_almond = if_else(grepl("nutty_almond", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_nutty_marzipan = if_else(grepl("nutty_marzipan", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_nutty_walnut = if_else(grepl("nutty_walnut", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_ripe = if_else(grepl("ripe", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_ripe_sweat = if_else(grepl("ripe_sweat", CATA_all,ignore.case = T), "1", "0")) 
+    
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_solvent = if_else(grepl("solvent", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_solvent_chemical = if_else(grepl("solvent_chemical", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_solvent_petroleum = if_else(grepl("solvent_petroleum", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_spicy = if_else(grepl("spicy", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_spicy_blackpepper = if_else(grepl("spicy_blackpepper", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_spicy_clove = if_else(grepl("spicy_clove", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_spicy_coriander = if_else(grepl("spicy_coriander", CATA_all,ignore.case = T), "1", "0")) 
+    
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_stale = if_else(grepl("stale", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_stale_cardboard = if_else(grepl("stale_cardboard", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_stale_paper = if_else(grepl("stale_paper", CATA_all,ignore.case = T), "1", "0")) 
+    
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_sweetaromatic = if_else(grepl("sweetaromatic", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_sweetaromatic_bubblegum = if_else(grepl("sweetaromatic_bubblegum", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_sweetaromatic_candy = if_else(grepl("sweetaromatic_candy", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_sweetaromatic_caramel = if_else(grepl("sweetaromatic_caramel", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_sweetaromatic_honey = if_else(grepl("sweetaromatic_honey", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_sweetaromatic_sugarcane = if_else(grepl("sweetaromatic_sugarcane", CATA_all,ignore.case = T), "1", "0"))     
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_sweetaromatic_toffee = if_else(grepl("sweetaromatic_toffee", CATA_all,ignore.case = T), "1", "0")) 
+    
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_vegetal = if_else(grepl("vegetal", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_vegetal_carrots = if_else(grepl("vegetal_carrots", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_vegetal_celery = if_else(grepl("vegetal_celery", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_vegetal_corn = if_else(grepl("vegetal_corn", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_vegetal_corn_cooked = if_else(grepl("vegetal_corn_cooked", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_vegetal_cucumber = if_else(grepl("vegetal_cucumber", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_vegetal_peas = if_else(grepl("vegetal_peas", CATA_all,ignore.case = T), "1", "0")) 
+  
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_waxy = if_else(grepl("waxy", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_waxy_fat = if_else(grepl("waxy_fat", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_waxy_oil = if_else(grepl("waxy_oil", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_waxy_soap = if_else(grepl("waxy_soap", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_waxy_tallow = if_else(grepl("waxy_tallow", CATA_all,ignore.case = T), "1", "0")) 
+    
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_woody = if_else(grepl("woody", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_woody_eucalyptus = if_else(grepl("woody_eucalyptus", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_woody_oak = if_else(grepl("woody_oak", CATA_all,ignore.case = T), "1", "0")) 
+  BF2.CATA.binary <- BF2.CATA.binary %>% mutate(aroma_woody_pine = if_else(grepl("woody_pine", CATA_all,ignore.case = T), "1", "0"))
+
+
+#code particulate smooth to small bubble size?
+
+# added mouthfeel, taste, aroma before each attribute to help with XLSTAT analysis
+
+write.csv(BF2.CATA.binary,"BF2.CATA.binary.csv")
+
+```
+
+# Cochran's Q test on Binary Data
+```{r, message = F, warning = F}
+# prepare and organize data
+CATA.CochQ = read.csv("BF2.CATA.binary.uniqueID.csv")
+
+str(CATA.CochQ)
+CATA.CochQ = CATA.CochQ[,-c(4)]
+
+rownames(CATA.CochQ) = CATA.CochQ[,1]
+CATA.CochQ = CATA.CochQ[,-1]
+
+colnames(CATA.CochQ)
+test <- CochranQTest(mouthfeel_afterfeel_slippery_high ~ Genotype | Panelist, data=CATA.CochQ)
+CochranQTest(mouthfeel_afterfeel_slippery_low ~ Genotype | Panelist, data=CATA.CochQ)
+CochranQTest(mouthfeel_afterfeel_astringency_drying ~ Genotype | Panelist, data=CATA.CochQ)
+CochranQTest(mouthfeel_afterfeel_astringency_low ~ Genotype | Panelist, data=CATA.CochQ)
+CochranQTest(mouthfeel_body_particulate_smooth ~ Genotype | Panelist, data=CATA.CochQ)
+CochranQTest(mouthfeel_body_particulate_gritty ~ Genotype | Panelist, data=CATA.CochQ)
+
+summary(test)
+# preliminary results match XLSTAT analysis
+
+# use lapply to run Cochrans Q test across attributes in the data frame
+
+colnames(CATA.CochQ)[3] # first attribute columm; confirm
+colnames(CATA.CochQ)[135] # first attribute columm; confirm
+
+#lapply for anovas
+
+CochQ_list<- lapply(names(CATA.CochQ[,c(3:135)]), function(x) CochranQTest(formula(paste0(x, 
+            "~ Genotype | Panelist")), data=CATA.CochQ))
+
+names(CochQ_list)<-names(CATA.CochQ[,c(3:135)])
+
+CochQ_results_CATA <- data.frame(
+  attribute = names(CATA.CochQ[,c(3:135)]),
+  statistic = sapply(CochQ_list, "[[", "statistic"),
+  pvalue = sapply(CochQ_list, "[[", "p.value")
+)
+
+write.csv(CochQ_results_CATA, "CATA_CochQ_results.csv")
+```
+
+## Unnest CATA_ALL (CATA_all_new)
+```{r, warning = F, message = F}
+#preserve word chains by changing from "-" to "_"
+BF2.CATA.aroma.all <- BF2.CATA.aroma.all %>% 
+  mutate(CATA_all_new = str_replace_all(CATA_all, "-", "_")) 
+
+# split CATA comments
+data("stop_words")
+
+CATA_aroma_all_tidy <- BF2.CATA.aroma.all %>%
+	group_by(Genotype) %>%
+	unnest_tokens(output = Aroma_all_attribute,
+		input = CATA_all_new) %>%
+	anti_join(stop_words, by = c("Aroma_all_attribute" = "word")) %>%
+	count(Aroma_all_attribute, sort = TRUE)
+
+```
+
+## Write long to csv and clean up
+```{r, message = F, warning=F}
+
+# write long version as .csv
+write.csv(CATA_aroma_all_tidy, "BF2_CATA_all.csv")
+```
+
+## Create contingency table - All
+```{r, message = F, warning=F}
+CATA_aroma_all_CT <- CATA_aroma_all_tidy %>%
+  spread(Aroma_all_attribute, n)
+
+write.csv(CATA_aroma_all_CT, "BF_CATA_All_contingTable.csv")
+
+
+# replace NA with 0
+CATA_aroma_all_CT[is.na(CATA_aroma_all_CT)] <- 0
+str(CATA_aroma_all_CT)
+```
+
+```{r, warning = F, message = F}
+dir()
+CATA_all_CT <- CATA_aroma_all_CT
+str(CATA_all_CT)
+```
+
+## Analysis prep - set genotype to row names; set as matrix first
+```{r, message = F, warning = F}
+CATA_all_CT = as.data.frame(CATA_all_CT)
+rownames.CATA_all_CT = CATA_all_CT[,1]
+CATA_all_CT = CATA_all_CT[,-1]
+str(CATA_all_CT)
+CATA_all_CT <- sapply(CATA_all_CT, as.numeric)
+str(CATA_all_CT)
+rownames(CATA_all_CT) = rownames.CATA_all_CT
+```
+
+## Chi square test
+```{r, warning = F, message = F}
+chisq_earthy = chisq.test(CATA_all_CT)
+chisq_earthy
+```
+
+No association between genotypes and all attributes. 
+
+## Correspondence Analysis
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+library(factoextra)
+library(SensoMineR)
+
+res.all = CA(CATA_all_CT, graph = FALSE) #changed to MCA from CA
+print(res.all)
+```
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.all)
+eig.val
+
+fviz_screeplot(res.all, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+The first two dimensions account for 38.2% and 32.4% of the variance, combining to account for 70.60% of the cumulative variance.
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+all_symm = fviz_ca_biplot(res.all,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+all_symm
+
+# no labels
+all_symm.naked = fviz_ca_biplot(res.all,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+all_symm.naked
+
+```
+
+This is the symmetric plot for the Beer CATA analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.all, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer CATA")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.all, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.all, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+all.asymm.naked <- fviz_ca_biplot(res.all, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+all.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+
+# CATA - Fruity
+## Data Prep - Separate out Fruity
+```{r, message = F, warning=F}
+CATA_fruity_CT <- CATA_fruity %>%
+  spread(Aroma_all_attribute, n)
+
+# replace NA with 0
+CATA_fruity_CT[is.na(CATA_fruity_CT)] <- 0
+str(CATA_fruity_CT)
+
+write_csv(CATA_fruity_CT, "BF_CATA_fruity.csv")
+
+# set genotype to row names
+# set as matrix first
+CATA_fruity_CT = as.data.frame(CATA_fruity_CT)
+rownames.CATA_fruity_CT = CATA_fruity_CT[,1]
+CATA_fruity_CT = CATA_fruity_CT[,-1]
+str(CATA_fruity_CT)
+CATA_fruity_CT <- sapply(CATA_fruity_CT, as.numeric)
+str(CATA_fruity_CT)
+rownames(CATA_fruity_CT) = rownames.CATA_fruity_CT
+```
+
+## Correspondence Analysis
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+res.fruity = CA(CATA_fruity_CT, graph = FALSE) #changed to MCA from CA
+print(res.fruity)
+```
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.fruity)
+eig.val
+
+fviz_screeplot(res.fruity, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+The first two dimensions account for 38.2% and 32.4% of the variance, combining to account for 70.60% of the cumulative variance.
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+Fruity_symm = fviz_ca_biplot(res.fruity,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+Fruity_symm
+
+# no labels
+Fruity_symm.naked = fviz_ca_biplot(res.fruity,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+Fruity_symm.naked
+
+```
+
+This is the symmetric plot for the Beer CATA analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.fruity, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer CATA")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.fruity, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.fruity, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+fruity.asymm.naked <- fviz_ca_biplot(res.fruity, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+fruity.asymm.naked
+```
+
+"If the angle between two arrows is acute, then there is a strong association between the corresponding row and column."
+
+# CATA - earthy
+## data prep
+## Read in
+```{r, message = F, warning=F}
+
+# write long version as .csv
+CATA_aroma_all_tidy = read.csv("BF2_CATA_all.csv", header = T)
+```
+
+##Separate out by attribute category
+### Earthy
+```{r, message = F, warning=F}
+CATA_earthy <- filter(CATA_aroma_all_tidy,
+                      grepl('earthy', Aroma_all_attribute))
+```
+
+## create contingency table
+```{r, message = F, warning=F}
+CATA_earthy_CT <- CATA_earthy %>%
+  spread(Aroma_all_attribute, n)
+
+# replace NA with 0
+CATA_earthy_CT[is.na(CATA_earthy_CT)] <- 0
+str(CATA_earthy_CT)
+
+write_csv(CATA_earthy_CT, "BF_CATA_earthy.csv")
+
+# set genotype to row names
+# set as matrix first
+CATA_earthy_CT = as.data.frame(CATA_earthy_CT)
+rownames.CATA_earthy_CT = CATA_earthy_CT[,1]
+CATA_earthy_CT = CATA_earthy_CT[,-1]
+str(CATA_earthy_CT)
+CATA_earthy_CT <- sapply(CATA_earthy_CT, as.numeric)
+str(CATA_earthy_CT)
+rownames(CATA_earthy_CT) = rownames.CATA_earthy_CT
+```
+
+## Correspondence Analysis
+## earthy
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+res.earthy = CA(CATA_earthy_CT, graph = FALSE) #changed to MCA from CA
+print(res.earthy)
+```
+
+### Chi Square Tests 
+```{r, warning=F, message=F}
+# test if there is an association between the genotypes and aroma attributes
+## H0 = no relationship between rows (genotypes) and column (aroma attributes)
+
+chisq_earthy = chisq.test(CATA_earthy_CT)
+chisq_earthy
+```
+
+No significant association between rows and columns for earthy attributes
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.earthy)
+eig.val
+
+fviz_screeplot(res.earthy, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+earthy_symm = fviz_ca_biplot(res.earthy,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+earthy_symm
+
+# no labels
+earthy_symm.naked = fviz_ca_biplot(res.earthy,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+earthy_symm.naked
+
+```
+
+This is the symmetric plot for the Beer CATA analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.earthy, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer CATA")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.earthy, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.earthy, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+earthy.asymm.naked <- fviz_ca_biplot(res.earthy, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+earthy.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+
+# CATA - woody
+## data prep
+## Read in
+```{r, message = F, warning=F}
+
+# write long version as .csv
+CATA_aroma_all_tidy = read.csv("BF2_CATA_all.csv", header = T)
+```
+
+##Separate out by attribute category
+### woody
+```{r, message = F, warning=F}
+CATA_woody <- filter(CATA_aroma_all_tidy,
+                      grepl('woody', Aroma_all_attribute))
+```
+
+## create contingency table
+```{r, message = F, warning=F}
+CATA_woody_CT <- CATA_woody %>%
+  spread(Aroma_all_attribute, n)
+
+# replace NA with 0
+CATA_woody_CT[is.na(CATA_woody_CT)] <- 0
+str(CATA_woody_CT)
+
+write_csv(CATA_woody_CT, "BF_CATA_woody.csv")
+
+# set genotype to row names
+# set as matrix first
+CATA_woody_CT = as.data.frame(CATA_woody_CT)
+rownames.CATA_woody_CT = CATA_woody_CT[,1]
+CATA_woody_CT = CATA_woody_CT[,-1]
+str(CATA_woody_CT)
+CATA_woody_CT <- sapply(CATA_woody_CT, as.numeric)
+str(CATA_woody_CT)
+rownames(CATA_woody_CT) = rownames.CATA_woody_CT
+```
+
+## Correspondence Analysis
+## woody
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+res.woody = CA(CATA_woody_CT, graph = FALSE) #changed to MCA from CA
+print(res.woody)
+```
+
+### Chi Square Tests 
+```{r, warning=F, message=F}
+# test if there is an association between the genotypes and aroma attributes
+## H0 = no relationship between rows (genotypes) and column (aroma attributes)
+
+chisq_woody = chisq.test(CATA_woody_CT)
+chisq_woody
+```
+
+No significant association between rows and columns for woody attributes
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.woody)
+eig.val
+
+fviz_screeplot(res.woody, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+woody_symm = fviz_ca_biplot(res.woody,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+woody_symm
+
+# no labels
+woody_symm.naked = fviz_ca_biplot(res.woody,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+woody_symm.naked
+
+```
+
+This is the symmetric plot for the Beer CATA analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.woody, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer CATA")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.woody, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.woody, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+woody.asymm.naked <- fviz_ca_biplot(res.woody, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+woody.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+
+# CATA - floral
+## data prep
+## Read in
+```{r, message = F, warning=F}
+
+# write long version as .csv
+CATA_aroma_all_tidy = read.csv("BF2_CATA_all.csv", header = T)
+```
+
+##Separate out by attribute category
+### floral
+```{r, message = F, warning=F}
+CATA_floral <- filter(CATA_aroma_all_tidy,
+                      grepl('floral', Aroma_all_attribute))
+```
+
+## create contingency table
+```{r, message = F, warning=F}
+CATA_floral_CT <- CATA_floral %>%
+  spread(Aroma_all_attribute, n)
+
+
+# replace NA with 0
+CATA_floral_CT[is.na(CATA_floral_CT)] <- 0
+str(CATA_floral_CT)
+
+write_csv(CATA_floral_CT, "BF_CATA_floral.csv")
+
+# set genotype to row names
+# set as matrix first
+CATA_floral_CT = as.data.frame(CATA_floral_CT)
+rownames.CATA_floral_CT = CATA_floral_CT[,1]
+CATA_floral_CT = CATA_floral_CT[,-1]
+str(CATA_floral_CT)
+CATA_floral_CT <- sapply(CATA_floral_CT, as.numeric)
+str(CATA_floral_CT)
+rownames(CATA_floral_CT) = rownames.CATA_floral_CT
+```
+
+## Correspondence Analysis
+## floral
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+res.floral = CA(CATA_floral_CT, graph = FALSE) #changed to MCA from CA
+print(res.floral)
+```
+
+### Chi Square Tests 
+```{r, warning=F, message=F}
+# test if there is an association between the genotypes and aroma attributes
+## H0 = no relationship between rows (genotypes) and column (aroma attributes)
+
+chisq_floral = chisq.test(CATA_floral_CT)
+chisq_floral
+```
+
+No significant association between rows and columns for floral attributes
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.floral)
+eig.val
+
+fviz_screeplot(res.floral, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+floral_symm = fviz_ca_biplot(res.floral,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+floral_symm
+
+# no labels
+floral_symm.naked = fviz_ca_biplot(res.floral,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+floral_symm.naked
+
+```
+
+This is the symmetric plot for the Beer CATA analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.floral, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer CATA")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.floral, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.floral, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+floral.asymm.naked <- fviz_ca_biplot(res.floral, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+floral.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."s
+
+# CATA - grassy
+## data prep
+## Read in
+```{r, message = F, warning=F}
+
+# write long version as .csv
+CATA_aroma_all_tidy = read.csv("BF2_CATA_all.csv", header = T)
+```
+
+##Separate out by attribute category
+### grassy
+```{r, message = F, warning=F}
+CATA_grassy <- filter(CATA_aroma_all_tidy,
+                      grepl('grassy', Aroma_all_attribute))
+```
+
+## create contingency table
+```{r, message = F, warning=F}
+CATA_grassy_CT <- CATA_grassy %>%
+  spread(Aroma_all_attribute, n)
+
+# replace NA with 0
+CATA_grassy_CT[is.na(CATA_grassy_CT)] <- 0
+str(CATA_grassy_CT)
+
+write_csv(CATA_grassy_CT, "BF_CATA_grassy.csv")
+
+# set genotype to row names
+# set as matrix first
+CATA_grassy_CT = as.data.frame(CATA_grassy_CT)
+rownames.CATA_grassy_CT = CATA_grassy_CT[,1]
+CATA_grassy_CT = CATA_grassy_CT[,-1]
+str(CATA_grassy_CT)
+CATA_grassy_CT <- sapply(CATA_grassy_CT, as.numeric)
+str(CATA_grassy_CT)
+rownames(CATA_grassy_CT) = rownames.CATA_grassy_CT
+```
+
+## Correspondence Analysis
+## grassy
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+res.grassy = CA(CATA_grassy_CT, graph = FALSE) #changed to MCA from CA
+print(res.grassy)
+```
+
+### Chi Square Tests 
+```{r, warning=F, message=F}
+# test if there is an association between the genotypes and aroma attributes
+## H0 = no relationship between rows (genotypes) and column (aroma attributes)
+
+chisq_grassy = chisq.test(CATA_grassy_CT)
+chisq_grassy
+```
+
+No significant association between rows and columns for grassy attributes
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.grassy)
+eig.val
+
+fviz_screeplot(res.grassy, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+grassy_symm = fviz_ca_biplot(res.grassy,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+grassy_symm
+
+# no labels
+grassy_symm.naked = fviz_ca_biplot(res.grassy,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+grassy_symm.naked
+
+```
+
+This is the symmetric plot for the Beer CATA analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.grassy, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer CATA")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.grassy, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.grassy, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+grassy.asymm.naked <- fviz_ca_biplot(res.grassy, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+grassy.asymm.naked
+```
+
+
+# CATA - Filtered Attributes (must have at least 5 citations for each genotype)
+## data prep
+## Read in
+```{r, message = F, warning=F}
+
+# write long version as .csv
+dir()
+
+# read in contingency table
+CATA_Filter5Out.read = read.csv("BF_CATA_ContingTable_Filter5Out.csv", header = T)
+
+head(CATA_Filter5Out.read)
+str(CATA_Filter5Out.read)
+```
+
+## Correspondence Analysis
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+
+CATA_Filter5Out = data.matrix(CATA_Filter5Out.read) #genotypes go to 1, 2, 3, 4
+rownames(CATA_Filter5Out) = CATA_Filter5Out.read[,1]
+CATA_Filter5Out = CATA_Filter5Out[,-1]
+
+res.Filter5Out = CA(CATA_Filter5Out, graph = FALSE) #changed to MCA from CA
+print(res.Filter5Out)
+```
+
+### Chi Square Tests 
+```{r, warning=F, message=F}
+# test if there is an association between the genotypes and aroma attributes
+## H0 = no relationship between rows (genotypes) and column (aroma attributes)
+
+chisq_Filter5Out = chisq.test(CATA_Filter5Out)
+chisq_Filter5Out
+```
+
+No significant association between rows and columns for filtered attributes
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.Filter5Out)
+eig.val
+
+fviz_screeplot(res.Filter5Out, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+Filter5Out_symm = fviz_ca_biplot(res.Filter5Out,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+Filter5Out_symm
+
+# no labels
+Filter5Out_symm.naked = fviz_ca_biplot(res.Filter5Out,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+Filter5Out_symm.naked
+
+```
+
+This is the symmetric plot for the Filtered Attribute CATA analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.Filter5Out, col.row="contrib", gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer CATA")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.Filter5Out, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.Filter5Out, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+Filter5Out.asymm.naked <- fviz_ca_biplot(res.Filter5Out, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+Filter5Out.asymm.naked
+
+# remove arrows and have attributes represented as triangles
+# labels
+fviz_ca_biplot(res.Filter5Out, 
+               map="colprincipal",
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+Filter5Out.asymm.naked <- fviz_ca_biplot(res.Filter5Out, 
+               map="colprincipal",
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+Filter5Out.asymm.naked
+```
+
+#CATAFilter Correlation
+## CATAFilter Attributes w/ Rank
+```{r, warning = F, message = F}
+# Load required libraries
+rm(list=ls())
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+library(tidytext)
+library(stringr)
+library(corrplot)
+library(Hmisc)
+
+
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+```
+
+## read in data frames
+```{r, warning=F, message=F}
+BF2_CATAFilterRank = read.csv("BF2_CATAFilter5Out_Rank.csv", header = T) 
+
+colnames(BF2_CATAFilterRank)
+
+# set up for matrix
+BF2_CATAFilterRank_mat = subset(BF2_CATAFilterRank, select =-c(Panelist, Genotype, CATA_all))
+rownames(BF2_CATAFilterRank_mat) = BF2_CATAFilterRank_mat[,1] #want Unique ID "Panelist_Genotype" as row name
+BF2_CATAFilterRank_mat = BF2_CATAFilterRank_mat[,-1]
+
+# run spearman correlation
+corr.CATAFilterRank = rcorr(as.matrix(BF2_CATAFilterRank_mat), type = "spearman")
+
+# view results
+CATAFilterRankCorrCoeff <- corr.CATAFilterRank$r
+CATAFilterRankCorrP <- round(corr.CATAFilterRank$P, 4)
+
+# visualize correlation matrix
+
+CorrPlotCATAFilterRank <- corrplot(corr.CATAFilterRank$r,
+                             sig.level = 0.05,
+                             insig = "pch",
+                             method = "circle",
+                             type = "upper",
+                             order = "hclust",
+                             p.mat = corr.CATAFilterRank$P)
+```
+
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+# NewDesc - ALL
+```{r, warning = F, message = F}
+#https://ourcodingclub.github.io/tutorials/qualitative/
+# Load required libraries
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+library(tidytext)
+library(stringr)
+
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+#BF2 = read.csv("BF_Round2.csv", header = T) outdated after coding new terms from open description
+BF2 = read.csv("BF2_Round2_wDesc.csv", header = T) 
+
+
+# ignore aroma below, artifact of copy and paste
+
+colnames(BF2)
+BF2.NewDesc = BF2[,c("Panelist", "Genotype", "NewDesc")]
+
+# Convert NewDesc columns form factor to character
+BF2.NewDesc$NewDesc <- as.character(BF2.NewDesc$NewDesc)
+str(BF2.NewDesc)
+```
+
+## Create binary dataframe (0/1; absent/present) for NewDesc attributes
+```{r, warning = F, message = F}
+BF2.NewDesc.binary = BF2[,c("Panelist", "Genotype", "NewDesc")]
+
+
+# check the MetaDataDesc in BF_Round2_Desc_working to see how to code
+# easy drinking
+# clean flavor
+# low aroma
+# hoppy
+# sour aftertaste
+# yeasty
+# balanced
+# light
+# good taste
+# favorite
+# good flavor
+# strong
+# nice body
+# nice aroma
+# bland
+# refreshing
+# tastes like a macro brand
+# watery
+# nice
+# heavy
+# mild
+# no aftertaste
+# bitter aftertaste
+# strong aftertaste
+# bad aftertaste
+# least favorite
+# good aftertaste
+# bad taste
+# crisp
+# smooth
+# sweet aftertaste 
+# sharp
+# lager
+
+# if a keyword appears in the NewDesc_new column, put a 1 if not put a 0
+# troubleshooting
+## cannot pipe after mutate, because it will pass the results of the first mutate to the second mutate
+## need to have ignore.case = T in all if_else statements
+
+#BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(term = if_else(grepl("term", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(EasyDrinking = if_else(grepl("easy drinking", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(CleanFlavor = if_else(grepl("clean flavor", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(LowAroma = if_else(grepl("low aroma", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Hoppy = if_else(grepl("hoppy", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(SourAftertaste = if_else(grepl("sour aftertaste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Yeasty = if_else(grepl("yeasty", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Balanced = if_else(grepl("balanced", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Light = if_else(grepl("light", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(GoodTaste = if_else(grepl("good taste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Favorite = if_else(grepl("favorite", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(GoodFlavor = if_else(grepl("good flavor", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Strong = if_else(grepl("strong", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(NiceBody = if_else(grepl("nice body", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(NiceAroma = if_else(grepl("nice aroma", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Bland = if_else(grepl("bland", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Refreshing = if_else(grepl("refreshing", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(MacroTaste = if_else(grepl("tastes like a macro brand", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Watery = if_else(grepl("watery", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Nice = if_else(grepl("nice", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Heavy = if_else(grepl("heavy", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Mild = if_else(grepl("mild", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(NoAftertaste = if_else(grepl("no aftertaste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(BitterAftertaste = if_else(grepl("bitter aftertaste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(StrongAftertaste = if_else(grepl("strong aftertaste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(BadAftertaste = if_else(grepl("bad aftertaste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(LeastFavorite = if_else(grepl("least favorite", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(GoodAftertaste = if_else(grepl("good aftertaste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(BadTaste = if_else(grepl("bad taste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Crisp = if_else(grepl("crisp", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Smooth = if_else(grepl("smooth", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(SweetAftertaste = if_else(grepl("sweet aftertaste", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Sharp = if_else(grepl("sharp", NewDesc,ignore.case = T), "1", "0"))
+  BF2.NewDesc.binary <- BF2.NewDesc.binary %>% mutate(Lager = if_else(grepl("lager", NewDesc,ignore.case = T), "1", "0"))
+
+  write.csv(BF2.NewDesc.binary,"BF2.NewDesc.binary.csv")
+  
+#in first column (1,2,3,4...) rename as Unique and fill as "Panelist.Genotype" (e.g. 1.117.17)
+
+```
+
+#New Desc Cochran's Q test on Binary Data
+```{r, message = F, warning = F}
+# prepare and organize data
+NewDesc.CochQ = read.csv("BF2.NewDesc.binary.uniqueID.csv")
+
+str(NewDesc.CochQ)
+colnames(NewDesc.CochQ)
+
+NewDesc.CochQ = NewDesc.CochQ[,-c(4)] #remove NewDesc column with term series (Term,Term,Term)
+
+rownames(NewDesc.CochQ) = NewDesc.CochQ[,1] # set Unique as row names
+NewDesc.CochQ = NewDesc.CochQ[,-1] #remove Unique column
+
+colnames(NewDesc.CochQ)
+
+# load library for Cochran Q test
+library(DescTools)
+
+# use lapply to run Cochrans Q test across attributes in the data frame
+colnames(NewDesc.CochQ)[3] # first attribute columm; confirm
+colnames(NewDesc.CochQ)[35] # first attribute columm; confirm
+
+#lapply for anovas
+
+CochQ_list<- lapply(names(NewDesc.CochQ[,c(3:35)]), function(x) CochranQTest(formula(paste0(x, 
+            "~ Genotype | Panelist")), data=NewDesc.CochQ))
+
+names(CochQ_list)<-names(NewDesc.CochQ[,c(3:35)])
+
+CochQ_results_NewDesc <- data.frame(
+  attribute = names(NewDesc.CochQ[,c(3:35)]),
+  statistic = sapply(CochQ_list, "[[", "statistic"),
+  pvalue = sapply(CochQ_list, "[[", "p.value")
+)
+
+write.csv(CochQ_results_NewDesc, "NewDesc_CochQ_results.csv")
+```
+
+## Unnest NewDesc_ALL (NewDesc_all_new)
+```{r, warning = F, message = F}
+# swap space for _
+BF2.NewDesc <- BF2.NewDesc %>% 
+  mutate(NewDesc_new = str_replace_all(NewDesc, " ", "_"))
+
+# split NewDesc comments
+data("stop_words")
+
+NewDesc_tidy <- BF2.NewDesc %>%
+	group_by(Genotype) %>%
+	unnest_tokens(output = Terms,
+		input = NewDesc_new) %>%
+	anti_join(stop_words, by = c("Terms" = "word")) %>%
+	count(Terms, sort = TRUE)
+
+```
+
+## Write long to csv and clean up
+```{r, message = F, warning=F}
+
+# write long version as .csv
+write.csv(NewDesc_tidy, "BF2_NewDesc_TidyCount.csv")
+
+# anything with a space will be broken; compare to original list
+```
+
+## Create contingency table - All
+```{r, message = F, warning=F}
+NewDesc_tidy_cleaned <- read.csv("BF2_NewDesc_TidyCount_cleaned.csv")
+head(NewDesc_tidy_cleaned)
+
+NewDesc_CT <- pivot_wider(NewDesc_tidy_cleaned, names_from = attributes, values_from = tallied)
+
+write.csv(NewDesc_CT, "BF_NewDesc_All_contingTable.csv") 
+```
+
+```{r, warning = F, message = F}
+dir()
+NewDesc_CT <- NewDesc_CT
+str(NewDesc_CT)
+```
+
+## Analysis prep - set genotype to row names; set as matrix first
+```{r, message = F, warning = F}
+NewDesc_CT = as.data.frame(NewDesc_CT)
+rownames.NewDesc_CT = NewDesc_CT[,1]
+NewDesc_CT = NewDesc_CT[,-1]
+str(NewDesc_CT)
+NewDesc_CT <- sapply(NewDesc_CT, as.numeric)
+str(NewDesc_CT)
+rownames(NewDesc_CT) = rownames.NewDesc_CT
+```
+
+## Chi square test
+```{r, warning = F, message = F}
+chisq_NewDesc = chisq.test(NewDesc_CT)
+chisq_NewDesc
+```
+
+No association between genotypes and all attributes. 
+
+## Correspondence Analysis
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+library(factoextra)
+library(SensoMineR)
+
+res.all.NewDesc = CA(NewDesc_CT, graph = FALSE) #changed to MCA from CA
+print(res.all.NewDesc)
+```
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.all.NewDesc)
+eig.val
+
+fviz_screeplot(res.all.NewDesc, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+The first two dimensions account for 46.9% and 28.9% of the variance, combining to account for 75.7% of the cumulative variance.
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+all_symm = fviz_ca_biplot(res.all.NewDesc,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+all_symm
+
+# no labels
+all_symm.naked = fviz_ca_biplot(res.all.NewDesc,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+all_symm.naked
+
+```
+
+This is the symmetric plot for the Beer NewDesc analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.all.NewDesc, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer NewDesc")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.all.NewDesc, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.all.NewDesc, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+all.asymm.naked <- fviz_ca_biplot(res.all.NewDesc, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+all.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+
+## NewDesc - Filter Out
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# those that generally have at least five citations per genotype
+#bland
+#easy_drinking
+#good_flavor
+#hoppy
+#light
+#low_aroma
+#refreshing
+#sharp
+#smooth
+#tastes_like_a_macro_brand
+NewDesc_FilterOut_CT <- read.csv("BF2.NewDesc_FilterOut.csv", header = T)
+```
+
+
+## Correspondence Analysis
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+library(factoextra)
+library(SensoMineR)
+
+rownames(NewDesc_FilterOut_CT) = NewDesc_FilterOut_CT[,1]
+NewDesc_FilterOut_CT = NewDesc_FilterOut_CT[,-1]
+
+res.all.NewDesc_FilterOut = CA(NewDesc_FilterOut_CT, graph = FALSE) #changed to MCA from CA
+print(res.all.NewDesc_FilterOut)
+```
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.all.NewDesc_FilterOut)
+eig.val
+
+fviz_screeplot(res.all.NewDesc_FilterOut, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+The first two dimensions account for 46.9% and 28.9% of the variance, combining to account for 75.7% of the cumulative variance.
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+all_symm = fviz_ca_biplot(res.all.NewDesc_FilterOut,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+all_symm
+
+# no labels
+all_symm.naked = fviz_ca_biplot(res.all.NewDesc_FilterOut,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+all_symm.naked
+
+```
+
+This is the symmetric plot for the Beer NewDesc_FilterOut analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.all.NewDesc_FilterOut, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer NewDesc_FilterOut")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.all.NewDesc_FilterOut, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.all.NewDesc_FilterOut, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+
+# labels - no arrows
+fviz_ca_biplot(res.all.NewDesc_FilterOut, 
+               map="colprincipal",
+               #arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+# naked
+all.asymm.naked <- fviz_ca_biplot(res.all.NewDesc_FilterOut, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+all.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+
+#NewDesc Correlation
+## NewDesc Attributes w/ Rank
+```{r, warning = F, message = F}
+# Load required libraries
+rm(list=ls())
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+library(tidytext)
+library(stringr)
+library(corrplot)
+library(Hmisc)
+
+
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+```
+
+## read in data frames
+```{r, warning=F, message=F}
+BF2_NewDescRank = read.csv("BF2_NewDesc_FilterOut_Rank.csv", header = T) 
+
+colnames(BF2_NewDescRank)
+
+# set up for matrix
+BF2_NewDescRank_mat = subset(BF2_NewDescRank, select =-c(Panelist, Genotype, NewDesc))
+rownames(BF2_NewDescRank_mat) = BF2_NewDescRank_mat[,1] #want Unique ID "Panelist_Genotype" as row name
+BF2_NewDescRank_mat = BF2_NewDescRank_mat[,-1]
+
+# run spearman correlation
+corr.NewDescRank = rcorr(as.matrix(BF2_NewDescRank_mat), type = "spearman")
+
+# view results
+NewDescRankCorrCoeff <- corr.NewDescRank$r
+NewDescRankCorrP <- round(corr.NewDescRank$P, 5)
+
+# visualize correlation matrix
+
+CorrPlotNewDescRank <- corrplot(corr.NewDescRank$r,
+                             sig.level = 0.05,
+                             insig = "pch",
+                             method = "circle",
+                             type = "upper",
+                             order = "hclust",
+                             p.mat = corr.NewDescRank$P)
+```
+
+
+# DescCoded
+```{r, warning = F, message = F}
+#https://ourcodingclub.github.io/tutorials/qualitative/
+# Load required libraries
+rm(list=ls())
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+library(tidytext)
+library(stringr)
+
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+#BF2 = read.csv("BF_Round2.csv", header = T) outdated after coding new terms from open description
+BF2 = read.csv("BF2_Round2_wDesc.csv", header = T) 
+head(BF2)
+
+# ignore aroma below, artifact of copy and paste
+
+colnames(BF2)
+BF2.DescCoded = BF2[,c("Panelist", "Genotype", "DescCoded")]
+str(BF2.DescCoded)
+
+# Convert DescCoded columns form factor to character
+BF2.DescCoded$Panelist <- as.factor(BF2.DescCoded$Panelist)
+BF2.DescCoded$DescCoded <- as.character(BF2.DescCoded$DescCoded)
+str(BF2.DescCoded)
+
+
+```
+
+## Create binary dataframe (0/1; absent/present) for DescCoded attributes
+```{r, warning = F, message = F}
+BF2.DescCoded.binary = BF2[,c("Panelist", "Genotype", "DescCoded")]
+levels(BF2.DescCoded.binary$DescCoded)
+
+# go through and change if else search to reflect coding
+# mouthfeel
+BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_afterfeel_slippery_high = if_else(grepl("slippery",DescCoded, ignore.case = T), "1", "0")) #changed Afterfeel-Slippery to Afterfeel-Slippery-High and Afterfeel-Slippery-None to Afterfeel-Slipper-Low in BF-Round2.csv
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_afterfeel_slippery_low = if_else(grepl("low slippery",DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_afterfeel_astringency_drying = if_else(grepl("drying", DescCoded, ignore.case = T), "1", "0"))
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_afterfeel_astringency_low = if_else(grepl("low astringency", DescCoded, ignore.case = T), "1", "0"))
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_body_particulate_smooth = if_else(grepl("smooth", DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_body_particulate_gritty = if_else(grepl("gritty", DescCoded, ignore.case = T), "1", "0")) 
+
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_body_density_light = if_else(grepl("light", DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_body_density_heavy = if_else(grepl("heavy", DescCoded, ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_body_viscosity_thin = if_else(grepl("thin", DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_body_viscosity_thick = if_else(grepl("thick", DescCoded, ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_effervescence_bubbledensity_dispersed = if_else(grepl("flat", DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_effervescence_bubbledensity_compact = if_else(grepl("bubbly", DescCoded, ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_effervescence_bubblesize_small = if_else(grepl("small bubbles", DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_effervescence_bubblesize_large = if_else(grepl("sharp", DescCoded, ignore.case = T), "1", "0"))
+
+
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_irritation_alcohol_warm = if_else(grepl("warm", DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_irritation_alcohol_burning = if_else(grepl("alcohol_burning", DescCoded, ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_irritation_carbonation_tingle = if_else(grepl("tingle", DescCoded, ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_effervescence_carbonation_burning = if_else(grepl("irritation_carbonation_burning", DescCoded, ignore.case = T), "1", "0"))
+  
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_irritation_cooling = if_else(grepl("cooling", DescCoded, ignore.case = T), "1", "0")) 
+  
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(mouthfeel_irritation_spicy = if_else(grepl("irritation_spicy", DescCoded, ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_spicy = if_else(grepl("spicy", DescCoded, ignore.case = T), "1", "0")) 
+
+# taste
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(taste_sour = if_else(grepl("sour",DescCoded,ignore.case = T), "1", "0")) 
+     
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(taste_bitter = if_else(grepl("bitter",DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(taste_salty = if_else(grepl("salty",DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(taste_sweet = if_else(grepl("sweet",DescCoded,ignore.case = T), "1", "0"))
+  
+# aroma
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_alcoholic = if_else(grepl("alcoholic", DescCoded,ignore.case = T), "1", "0"))  #changed alcohol to alcoholic in BF_Round2.csv
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_alcoholic_rum = if_else(grepl("rum", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_burnt = if_else(grepl("burnt", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_burnt_coffee = if_else(grepl("coffee", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_burnt_smoke = if_else(grepl("smoke", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal = if_else(grepl("cereal", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal_biscuit = if_else(grepl("biscuit", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal_bread = if_else(grepl("bread", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal_grahamcracker = if_else(grepl("grahamcracker", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal_greenmalt = if_else(grepl("greenmalt", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal_malt = if_else(grepl("malt", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal_roastedcereal = if_else(grepl("roastedcereal", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_cereal_toast = if_else(grepl("toast", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_dairy = if_else(grepl("dairy", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_dairy_butter = if_else(grepl("butter", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_dairy_cream = if_else(grepl("cream", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_dairy_milk = if_else(grepl("milk", DescCoded,ignore.case = T), "1", "0"))   
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_earthy = if_else(grepl("earthy", DescCoded,ignore.case = T), "1", "0"))   
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_earthy_mold = if_else(grepl("mold", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_earthy_mushroom = if_else(grepl("mushroom", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_earthy_musty = if_else(grepl("musty", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_earthy_soil = if_else(grepl("soil", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_earthy_truffle = if_else(grepl("truffle", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_earthy_moss = if_else(grepl("moss", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_floral = if_else(grepl("floral", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_floral_citronella = if_else(grepl("citronella", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_floral_hawthorn = if_else(grepl("hawthorn", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_floral_jasmine = if_else(grepl("jasmine", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_floral_perfume = if_else(grepl("perfume", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_floral_rose = if_else(grepl("rose", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_floral_violet = if_else(grepl("violet", DescCoded,ignore.case = T), "1", "0")) 
+
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity = if_else(grepl("fruity", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_apple = if_else(grepl("apple", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_apple_cider = if_else(grepl("cider", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_apple_greenapple = if_else(grepl("green apple", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_apple_sourapple = if_else(grepl("sour apple", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_berry = if_else(grepl("berry", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus = if_else(grepl("citrus", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus_grapefruit = if_else(grepl("grapefruit", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus_lemon = if_else(grepl("lemon", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus_lemon_peel = if_else(grepl("lemon peel", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus_lime = if_else(grepl("lime", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus_lime_peel = if_else(grepl("lime peel", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus_orange = if_else(grepl("orange", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_citrus_orange_peel = if_else(grepl("orange peel", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_coconut = if_else(grepl("coconut", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_differentfruits = if_else(grepl("different fruits", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_cannedfruits = if_else(grepl("canned fruits", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_melon = if_else(grepl("melon", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_pear = if_else(grepl("pear", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_stonefruit = if_else(grepl("stonefruit", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_stonefruit_apricot = if_else(grepl("apricot", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_stonefruit_peach = if_else(grepl("peach", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_tropical = if_else(grepl("tropical", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_tropical_banana = if_else(grepl("banana", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_tropical_mango = if_else(grepl("mango", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_fruity_tropical_pineapple = if_else(grepl("pineapple", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_grassy = if_else(grepl("grassy", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_grassy_freshcutgrass = if_else(grepl("fresh cut grass", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_grassy_greenleaves = if_else(grepl("green leaves", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_grassy_hay = if_else(grepl("hay", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_herbacious = if_else(grepl("herbacious", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_herbacious_oregano = if_else(grepl("oregano", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_herbacious_rosemary = if_else(grepl("rosemary", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_herbacious_tea = if_else(grepl("tea", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_herbacious_thyme = if_else(grepl("thyme", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_meaty = if_else(grepl("meaty", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_medicinal = if_else(grepl("medicinal", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_medicinal_bandaid = if_else(grepl("band-aid", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_medicinal_burntrubber = if_else(grepl("burnt rubber", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_medicinal_rubber = if_else(grepl("rubber", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_metallic = if_else(grepl("metallic", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_nutty = if_else(grepl("nutty", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_nutty_almond = if_else(grepl("almond", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_nutty_marzipan = if_else(grepl("marzipan", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_nutty_walnut = if_else(grepl("walnut", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_ripe = if_else(grepl("ripe", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_ripe_sweat = if_else(grepl("sweat", DescCoded,ignore.case = T), "1", "0")) 
+    
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_solvent = if_else(grepl("solvent", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_solvent_chemical = if_else(grepl("chemical", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_solvent_petroleum = if_else(grepl("petroleum", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_spicy = if_else(grepl("spicy", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_spicy_blackpepper = if_else(grepl("black pepper", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_spicy_clove = if_else(grepl("clove", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_spicy_coriander = if_else(grepl("coriander", DescCoded,ignore.case = T), "1", "0")) 
+    
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_stale = if_else(grepl("stale", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_stale_cardboard = if_else(grepl("cardboard", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_stale_paper = if_else(grepl("paper", DescCoded,ignore.case = T), "1", "0")) 
+    
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_sweetaromatic = if_else(grepl("sweet aromatic", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_sweetaromatic_bubblegum = if_else(grepl("bubble gum", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_sweetaromatic_candy = if_else(grepl("candy", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_sweetaromatic_caramel = if_else(grepl("caramel", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_sweetaromatic_honey = if_else(grepl("honey", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_sweetaromatic_sugarcane = if_else(grepl("sugar cane", DescCoded,ignore.case = T), "1", "0"))     
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_sweetaromatic_toffee = if_else(grepl("toffee", DescCoded,ignore.case = T), "1", "0")) 
+    
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_vegetal = if_else(grepl("vegetal", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_vegetal_carrots = if_else(grepl("carrots", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_vegetal_celery = if_else(grepl("celery", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_vegetal_corn = if_else(grepl("corn", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_vegetal_corn_cooked = if_else(grepl("cooked corn", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_vegetal_cucumber = if_else(grepl("cucumber", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_vegetal_peas = if_else(grepl("peas", DescCoded,ignore.case = T), "1", "0")) 
+  
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_waxy = if_else(grepl("waxy", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_waxy_fat = if_else(grepl("fat", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_waxy_oil = if_else(grepl("oil", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_waxy_soap = if_else(grepl("soap", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_waxy_tallow = if_else(grepl("tallow", DescCoded,ignore.case = T), "1", "0")) 
+    
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_woody = if_else(grepl("woody", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_woody_eucalyptus = if_else(grepl("eucalyptus", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_woody_oak = if_else(grepl("oak", DescCoded,ignore.case = T), "1", "0")) 
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_woody_pine = if_else(grepl("pine", DescCoded,ignore.case = T), "1", "0"))
+  BF2.DescCoded.binary <- BF2.DescCoded.binary %>% mutate(aroma_woody_cedar = if_else(grepl("cedar", DescCoded,ignore.case = T), "1", "0"))
+
+
+write.csv(BF2.DescCoded.binary,"BF2.DescCoded.binary.csv")
+
+```
+
+#DescCoded Cochran's Q test on Binary Data
+```{r, message = F, warning = F}
+# prepare and organize data
+DescCoded.CochQ = read.csv("BF2.DescCoded.binary.uniqueID.csv")
+
+str(DescCoded.CochQ)
+colnames(DescCoded.CochQ)
+head(DescCoded.CochQ)
+
+DescCoded.CochQ = DescCoded.CochQ[,-c(4)] #remove DescCoded column with term series (Term,Term,Term)
+
+rownames(DescCoded.CochQ) = DescCoded.CochQ[,1] # set Unique as row names
+DescCoded.CochQ = DescCoded.CochQ[,-1] #remove Unique column
+
+colnames(DescCoded.CochQ)
+
+# load library for Cochran Q test
+library(DescTools)
+
+# use lapply to run Cochrans Q test across attributes in the data frame
+colnames(DescCoded.CochQ)[3] # first attribute columm; confirm
+colnames(DescCoded.CochQ)[138] # first attribute columm; confirm
+
+#lapply for anovas
+
+CochQ_list<- lapply(names(DescCoded.CochQ[,c(3:138)]), function(x) CochranQTest(formula(paste0(x, 
+            "~ Genotype | Panelist")), data=DescCoded.CochQ))
+
+names(CochQ_list)<-names(DescCoded.CochQ[,c(3:138)])
+
+CochQ_results_DescCoded <- data.frame(
+  attribute = names(DescCoded.CochQ[,c(3:138)]),
+  statistic = sapply(CochQ_list, "[[", "statistic"),
+  pvalue = sapply(CochQ_list, "[[", "p.value")
+)
+
+write.csv(CochQ_results_DescCoded, "DescCoded_CochQ_results.csv")
+```
+
+## Create contingency table - All
+```{r, message = F, warning=F}
+# using binary data frame
+library(dplyr)
+
+BF2.DescCoded.binary <- read.csv("BF2.DescCoded.binary.csv")
+str(BF2.DescCoded.binary)
+
+BF2.DescCoded.binary <- subset(BF2.DescCoded.binary, select=-c(Panelist, DescCoded))
+
+str(BF2.DescCoded.binary)
+colnames(BF2.DescCoded.binary)
+
+#BF2.DescCoded.binary
+#BF2.DescCoded.binary[, 2:137] <- sapply(BF2.DescCoded.binary[, 2:137], as.numeric)
+
+
+DescCoded_CT <- BF2.DescCoded.binary %>% 
+  group_by(Genotype) %>% 
+  summarise_all(funs(sum))
+
+
+write.csv(DescCoded_CT, "BF_DescCoded_All_contingTable.csv") 
+```
+
+## DescCoded- Filtered Out (Lenient)
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# those that generally have at least five citations per genotype
+#mouthfeel_afterfeel_astringency_drying
+#smooth
+#mouthfeel_body_density_light
+#mouthfeel_body_density_heavy
+#taste_sour
+#taste_bitter
+#taste_sweet
+#aroma_cereal
+#aroma_cereal_malt
+#aroma_earthy
+#aroma_floral
+#aroma_fruity
+#aroma_fruity_citrus
+#aroma_grassy
+#aroma_nutty
+#aroma_woody
+
+dir()
+DescCoded_CT <- read.csv("BF2.NewDesc_FilterLenient.csv", header = T)
+
+```
+
+
+## Correspondence Analysis
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+library(factoextra)
+library(SensoMineR)
+
+rownames(DescCoded_CT) = DescCoded_CT[,1]
+DescCoded_CT = DescCoded_CT[,-1]
+
+res.all.DescCoded = CA(DescCoded_CT, graph = FALSE) #changed to MCA from CA
+print(res.all.DescCoded)
+```
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.all.DescCoded)
+eig.val
+
+fviz_screeplot(res.all.DescCoded, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+The first two dimensions account for 46.9% and 28.9% of the variance, combining to account for 75.7% of the cumulative variance.
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+all_symm = fviz_ca_biplot(res.all.DescCoded,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+all_symm
+
+# no labels
+all_symm.naked = fviz_ca_biplot(res.all.DescCoded,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+all_symm.naked
+
+```
+
+This is the symmetric plot for the Beer DescCoded analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.all.DescCoded, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer DescCoded")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.all.DescCoded, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.all.DescCoded, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+
+# labels - no arrows
+fviz_ca_biplot(res.all.DescCoded, 
+               map="colprincipal",
+               #arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+# naked
+all.asymm.naked <- fviz_ca_biplot(res.all.DescCoded, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+all.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+
+#DescCoded Correlation
+## DescCoded Attributes w/ Rank
+```{r, warning = F, message = F}
+# Load required libraries
+rm(list=ls())
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+library(tidytext)
+library(stringr)
+library(corrplot)
+library(Hmisc)
+
+
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+```
+
+## read in data frames
+```{r, warning=F, message=F}
+BF2_DescCodedRank = read.csv("BF2_DescCoded_FilterOut_Rank.csv", header = T) 
+
+colnames(BF2_DescCodedRank)
+
+# set up for matrix
+BF2_DescCodedRank_mat = subset(BF2_DescCodedRank, select =-c(Panelist, Genotype, DescCoded))
+rownames(BF2_DescCodedRank_mat) = BF2_DescCodedRank_mat[,1] #want Unique ID "Panelist_Genotype" as row name
+BF2_DescCodedRank_mat = BF2_DescCodedRank_mat[,-1]
+
+# run spearman correlation
+corr.DescCodedRank = rcorr(as.matrix(BF2_DescCodedRank_mat), type = "spearman")
+
+# view results
+DescCodedRankCorrCoeff <- corr.DescCodedRank$r
+DescCodedRankCorrP <- round(corr.DescCodedRank$P, 5)
+
+# visualize correlation matrix
+
+CorrPlotDescCodedRank <- corrplot(corr.DescCodedRank$r,
+                             sig.level = 0.05,
+                             insig = "pch",
+                             method = "circle",
+                             type = "upper",
+                             order = "hclust",
+                             p.mat = corr.DescCodedRank$P)
+```
+
+# Comb CATA 
+## Create binary dataframe (0/1; absent/present); first check CATA_all, then check DescCoded
+```{r, warning = F, message = F}
+BF2.Comb.binary = BF2[,c("Panelist", "Genotype", "CATA_all", "DescCoded")]
+str(BF2.Comb.binary)
+
+# change "-" to "_" for CATA_all
+BF2.Comb.binary <- BF2.Comb.binary %>% 
+  mutate(CATA_all = str_replace_all(CATA_all, "-", "_")) 
+
+# convert DescCoded columns form factor to character
+BF2.Comb.binary$Panelist <- as.factor(BF2.Comb.binary$Panelist)
+BF2.Comb.binary$DescCoded <- as.character(BF2.Comb.binary$DescCoded)
+
+str(BF2.Comb.binary)
+
+
+# if a keyword appears in the CATA_all_new column, put a 1 if not put a 0
+# troubleshooting
+## cannot pipe after mutate, because it will pass the results of the first mutate to the second mutate
+## need to have ignore.case = T in all if_else statements
+# find "0" and replace with if_else(grepl("term", DescCoded, ignore.case=T), "1", "0")
+
+# mouthfeel
+BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_afterfeel_slippery_high = if_else(grepl("afterfeel_slippery_high",CATA_all, ignore.case = T), "1", 
+                                                                                          if_else(grepl("slippery", DescCoded, ignore.case=T), "1", "0")))
+
+# continue coding like the one above
+
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_afterfeel_slippery_low = if_else(grepl("afterfeel_slippery_low",CATA_all, ignore.case = T), "1",
+                                                                                           if_else(grepl("low slippery", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_afterfeel_astringency_drying = if_else(grepl("afterfeel_astringency_drying", CATA_all, ignore.case = T), "1",
+                                                                                                 if_else(grepl("drying", DescCoded, ignore.case=T), "1", "0")))
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_afterfeel_astringency_low = if_else(grepl("afterfeel_astringency_low", CATA_all, ignore.case = T), "1",
+                                                                                              if_else(grepl("low astringency", DescCoded, ignore.case=T), "1", "0")))
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_body_particulate_smooth = if_else(grepl("body_particulate_smooth", CATA_all, ignore.case = T), "1", 
+                                                                                            if_else(grepl("smooth", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_body_particulate_gritty = if_else(grepl("body_particulate_gritty", CATA_all, ignore.case = T), "1",
+                                                                                            if_else(grepl("gritty", DescCoded, ignore.case=T), "1", "0"))) 
+
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_body_density_light = if_else(grepl("body_density_light", CATA_all, ignore.case = T), "1",
+                                                                                       if_else(grepl("light", DescCoded, ignore.case=T), "1", "0")))
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_body_density_heavy = if_else(grepl("body_density_heavy", CATA_all, ignore.case = T), "1", 
+                                                                                       if_else(grepl("heavy", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_body_viscosity_thin = if_else(grepl("body_viscosity_thin", CATA_all, ignore.case = T), "1",
+                                                                                        if_else(grepl("thin", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_body_viscosity_thick = if_else(grepl("body_viscosity_thick", CATA_all, ignore.case = T), "1",
+                                                                                         if_else(grepl("thick", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_effervescence_bubbledensity_dispersed = if_else(grepl("effervescence_bubbledensity_dispersed", CATA_all, ignore.case = T), "1",
+                                                                                                          if_else(grepl("flat", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_effervescence_bubbledensity_compact = if_else(grepl("effervescence_bubbledensity_compact", CATA_all, ignore.case = T), "1",
+                                                                                                        if_else(grepl("bubbly", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_effervescence_bubblesize_small = if_else(grepl("effervescence_bubblesize_small", CATA_all, ignore.case = T), "1",
+                                                                                                   if_else(grepl("small bubbles", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_effervescence_bubblesize_large = if_else(grepl("effervescence_bubblesize_large", CATA_all, ignore.case = T), "1",
+                                                                                                   if_else(grepl("sharp", DescCoded, ignore.case=T), "1", "0"))) 
+
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_irritation_alcohol_warm = if_else(grepl("irritation_alcohol_warm", CATA_all, ignore.case = T), "1", 
+                                                                                            if_else(grepl("warm", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_irritation_alcohol_burning = if_else(grepl("irritation_alcohol_burning", CATA_all, ignore.case = T), "1",
+                                                                                               if_else(grepl("alcohol_burning", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_irritation_carbonation_tingle = if_else(grepl("irritation_carbonation_tingle", CATA_all, ignore.case = T), "1",
+                                                                                                  if_else(grepl("irritation_carbonation_tingle", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_irritation_carbonation_burning = if_else(grepl("irritation_carbonation_burning", CATA_all, ignore.case = T), "1",
+                                                                                                  if_else(grepl("irritation_carbonation_burning", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_irritation_cooling = if_else(grepl("irritation_cooling", CATA_all, ignore.case = T), "1",
+                                                                                       if_else(grepl("cooling", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_irritation_spicy = if_else(grepl("irritation_spicy", CATA_all, ignore.case = T), "1",
+                                                                                     if_else(grepl("spicy", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(mouthfeel_irritation_spicy_burning = if_else(grepl("irritation_spicy_burning", CATA_all, ignore.case = T), "1",
+                                                                                             if_else(grepl("spicy_burning", DescCoded, ignore.case=T), "1", "0"))) # don't have burning attributed to spicy from open description data
+
+
+# taste
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(taste_sour = if_else(grepl("sour",CATA_all,ignore.case = T), "1",
+                                                                     if_else(grepl("sour", DescCoded, ignore.case=T), "1", "0"))) 
+     
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(taste_bitter = if_else(grepl("bitter",CATA_all,ignore.case = T), "1",
+                                                                       if_else(grepl("bitter", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(taste_salty = if_else(grepl("salty",CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("salty", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(taste_sweet = if_else(grepl("sweet",CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("sweet", DescCoded, ignore.case=T), "1", "0")))
+  
+# aroma
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_alcoholic = if_else(grepl("alcoholic", CATA_all,ignore.case = T), "1",
+                                                                          if_else(grepl("alcoholic", DescCoded, ignore.case=T), "1", "0")))  #changed alcohol to alcoholic in BF_Round2.csv
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_alcoholic_rum = if_else(grepl("alcoholic_rum", CATA_all,ignore.case = T), "1",
+                                                                              if_else(grepl("rum", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_burnt = if_else(grepl("burnt", CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("burnt", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_burnt_coffee = if_else(grepl("burnt_coffee", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("coffee", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_burnt_smoke = if_else(grepl("burnt_smoke", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("smoke", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal = if_else(grepl("cereal", CATA_all,ignore.case = T), "1",
+                                                                       if_else(grepl("cereal", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal_biscuit = if_else(grepl("cereal_biscuit", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("biscuit", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal_bread = if_else(grepl("cereal_bread", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("bread", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal_grahamcracker = if_else(grepl("cereal_grahamcracker", CATA_all,ignore.case = T), "1",
+                                                                                     if_else(grepl("graham cracker", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal_greenmalt = if_else(grepl("cereal_greenmalt", CATA_all,ignore.case = T), "1",
+                                                                                 if_else(grepl("green malt", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal_malt = if_else(grepl("cereal_malt", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("malt", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal_roastedcereal = if_else(grepl("cereal_roastedcereal", CATA_all,ignore.case = T), "1",
+                                                                                     if_else(grepl("roasted cereal", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_cereal_toast = if_else(grepl("cereal_toast", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("toast", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_dairy = if_else(grepl("dairy", CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("dairy", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_dairy_butter = if_else(grepl("dairy_butter", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("butter", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_dairy_cream = if_else(grepl("dairy_cream", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("cream", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_dairy_milk = if_else(grepl("dairy_milk", CATA_all,ignore.case = T), "1",
+                                                                           if_else(grepl("milk", DescCoded, ignore.case=T), "1", "0")))   
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_earthy = if_else(grepl("earthy", CATA_all,ignore.case = T), "1",
+                                                                       if_else(grepl("earthy", DescCoded, ignore.case=T), "1", "0")))   
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_earthy_mold = if_else(grepl("earthy_mold", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("mold", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_earthy_mushroom = if_else(grepl("earthy_mushroom", CATA_all,ignore.case = T), "1",
+                                                                                if_else(grepl("mushroom", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_earthy_musty = if_else(grepl("earthy_musty", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("musty", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_earthy_soil = if_else(grepl("earthy_soil", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("soil", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_earthy_truffle = if_else(grepl("earthy_truffle", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("truffle", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_floral = if_else(grepl("floral", CATA_all,ignore.case = T), "1",
+                                                                       if_else(grepl("floral", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_floral_citronella = if_else(grepl("floral_citronella", CATA_all,ignore.case = T), "1",
+                                                                                  if_else(grepl("citronella", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_floral_hawthorn = if_else(grepl("floral_hawthorn", CATA_all,ignore.case = T), "1",
+                                                                                if_else(grepl("hawthorn", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_floral_jasmine = if_else(grepl("floral_jasmine", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("jasmine", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_floral_perfume = if_else(grepl("floral_perfume", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("perfume", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_floral_rose = if_else(grepl("floral_rose", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("rose", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_floral_violet = if_else(grepl("floral_violet", CATA_all,ignore.case = T), "1",
+                                                                              if_else(grepl("violet", DescCoded, ignore.case=T), "1", "0"))) 
+
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity = if_else(grepl("fruity", CATA_all,ignore.case = T), "1",
+                                                                       if_else(grepl("fruity", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_apple = if_else(grepl("fruity_apple", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("apple", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_apple_cider = if_else(grepl("fruity_apple_cider", CATA_all,ignore.case = T), "1",
+                                                                                   if_else(grepl("cider", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_apple_greenapple = if_else(grepl("fruity_apple_greenapple", CATA_all,ignore.case = T), "1",
+                                                                                        if_else(grepl("green apple", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_apple_sourapple = if_else(grepl("fruity_apple_sourapple", CATA_all,ignore.case = T), "1",
+                                                                                       if_else(grepl("sour apple", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_berry = if_else(grepl("fruity_berry", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("berry", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus = if_else(grepl("fruity_citrus", CATA_all,ignore.case = T), "1",
+                                                                              if_else(grepl("citrus", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus_grapefruit = if_else(grepl("fruity_citrus_grapefruit", CATA_all,ignore.case = T), "1",
+                                                                                         if_else(grepl("grapefruit", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus_lemon = if_else(grepl("fruity_citrus_lemon", CATA_all,ignore.case = T), "1",
+                                                                                    if_else(grepl("lemon", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus_lemon_peel = if_else(grepl("fruity_citrus_lemon_peel", CATA_all,ignore.case = T), "1",
+                                                                                         if_else(grepl("lemon peel", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus_lime = if_else(grepl("fruity_citrus_lime", CATA_all,ignore.case = T), "1",
+                                                                                   if_else(grepl("lime", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus_lime_peel = if_else(grepl("fruity_citrus_lime_peel", CATA_all,ignore.case = T), "1",
+                                                                                        if_else(grepl("lime peel", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus_orange = if_else(grepl("fruity_citrus_orange", CATA_all,ignore.case = T), "1",
+                                                                                     if_else(grepl("orange", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_citrus_orange_peel = if_else(grepl("fruity_citrus_orange_peel", CATA_all,ignore.case = T), "1",
+                                                                                          if_else(grepl("orange peel", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_coconut = if_else(grepl("fruity_coconut", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("coconut", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_differentfruits = if_else(grepl("fruity_differentfruits", CATA_all,ignore.case = T), "1",
+                                                                                       if_else(grepl("different fruits", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_melon = if_else(grepl("fruity_melon", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("melon", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_pear = if_else(grepl("fruity_pear", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("pear", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_stonefruit = if_else(grepl("fruity_stonefruit", CATA_all,ignore.case = T), "1",
+                                                                                  if_else(grepl("stone fruit", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_stonefruit_apricot = if_else(grepl("fruity_stonefruit_apricot", CATA_all,ignore.case = T), "1",
+                                                                                          if_else(grepl("apricot", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_stonefruit_peach = if_else(grepl("fruity_stonefruit_peach", CATA_all,ignore.case = T), "1",
+                                                                                        if_else(grepl("peach", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_tropical = if_else(grepl("fruity_tropical", CATA_all,ignore.case = T), "1",
+                                                                                if_else(grepl("tropical", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_tropical_banana = if_else(grepl("fruity_tropical_banana", CATA_all,ignore.case = T), "1",
+                                                                                       if_else(grepl("banana", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_tropical_mango = if_else(grepl("fruity_tropical_mango", CATA_all,ignore.case = T), "1",
+                                                                                      if_else(grepl("mango", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_fruity_tropical_pineapple = if_else(grepl("fruity_tropical_pineapple", CATA_all,ignore.case = T), "1",
+                                                                                          if_else(grepl("pineapple", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_grassy = if_else(grepl("grassy", CATA_all,ignore.case = T), "1",
+                                                                       if_else(grepl("grassy", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_grassy_freshcutgrass = if_else(grepl("grassy_freshcutgrass", CATA_all,ignore.case = T), "1",
+                                                                                     if_else(grepl("fresh cut grass", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_grassy_greenleaves = if_else(grepl("grassy_greenleaves", CATA_all,ignore.case = T), "1",
+                                                                                   if_else(grepl("green leaves", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_grassy_hay = if_else(grepl("grassy_hay", CATA_all,ignore.case = T), "1",
+                                                                           if_else(grepl("hay", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_herbacious = if_else(grepl("herbacious", CATA_all,ignore.case = T), "1",
+                                                                           if_else(grepl("herbacious", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_herbacious_oregano = if_else(grepl("herbacious_oregano", CATA_all,ignore.case = T), "1",
+                                                                                   if_else(grepl("oregano", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_herbacious_rosemary = if_else(grepl("herbacious_rosemary", CATA_all,ignore.case = T), "1",
+                                                                                    if_else(grepl("rosemary", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_herbacious_tea = if_else(grepl("herbacious_tea", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("tea", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_herbacious_thyme = if_else(grepl("herbacious_thyme", CATA_all,ignore.case = T), "1",
+                                                                                 if_else(grepl("thyme", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_meaty = if_else(grepl("meaty", CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("meaty", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_medicinal = if_else(grepl("medicinal", CATA_all,ignore.case = T), "1",
+                                                                          if_else(grepl("medicinal", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_medicinal_bandaid = if_else(grepl("medicinal_bandaid", CATA_all,ignore.case = T), "1",
+                                                                                  if_else(grepl("band-aid", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_medicinal_burntrubber = if_else(grepl("medicinal_burntrubber", CATA_all,ignore.case = T), "1",
+                                                                                      if_else(grepl("burnt rubber", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_medicinal_rubber = if_else(grepl("medicinal_rubber", CATA_all,ignore.case = T), "1",
+                                                                                 if_else(grepl("rubber", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_metallic = if_else(grepl("metallic", CATA_all,ignore.case = T), "1",
+                                                                         if_else(grepl("metallic", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_nutty = if_else(grepl("nutty", CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("nutty", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_nutty_almond = if_else(grepl("nutty_almond", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("almond", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_nutty_marzipan = if_else(grepl("nutty_marzipan", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("marzipan", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_nutty_walnut = if_else(grepl("nutty_walnut", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("walnut", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_ripe = if_else(grepl("ripe", CATA_all,ignore.case = T), "1",
+                                                                     if_else(grepl("ripe", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_ripe_sweat = if_else(grepl("ripe_sweat", CATA_all,ignore.case = T), "1",
+                                                                           if_else(grepl("sweat", DescCoded, ignore.case=T), "1", "0"))) 
+    
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_solvent = if_else(grepl("solvent", CATA_all,ignore.case = T), "1",
+                                                                        if_else(grepl("solvent", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_solvent_chemical = if_else(grepl("solvent_chemical", CATA_all,ignore.case = T), "1",
+                                                                                 if_else(grepl("chemical", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_solvent_petroleum = if_else(grepl("solvent_petroleum", CATA_all,ignore.case = T), "1",
+                                                                                  if_else(grepl("petroleum", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_spicy = if_else(grepl("spicy", CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("spicy", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_spicy_blackpepper = if_else(grepl("spicy_blackpepper", CATA_all,ignore.case = T), "1",
+                                                                                  if_else(grepl("black pepper", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_spicy_clove = if_else(grepl("spicy_clove", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("clove", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_spicy_coriander = if_else(grepl("spicy_coriander", CATA_all,ignore.case = T), "1",
+                                                                                if_else(grepl("coriander", DescCoded, ignore.case=T), "1", "0"))) 
+    
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_stale = if_else(grepl("stale", CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("stale", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_stale_cardboard = if_else(grepl("stale_cardboard", CATA_all,ignore.case = T), "1",
+                                                                                if_else(grepl("cardboard", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_stale_paper = if_else(grepl("stale_paper", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("paper", DescCoded, ignore.case=T), "1", "0"))) 
+    
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_sweetaromatic = if_else(grepl("sweetaromatic", CATA_all,ignore.case = T), "1",
+                                                                              if_else(grepl("sweet aromatic", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_sweetaromatic_bubblegum = if_else(grepl("sweetaromatic_bubblegum", CATA_all,ignore.case = T), "1",
+                                                                                        if_else(grepl("bubble gum", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_sweetaromatic_candy = if_else(grepl("sweetaromatic_candy", CATA_all,ignore.case = T), "1",
+                                                                                    if_else(grepl("candy", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_sweetaromatic_caramel = if_else(grepl("sweetaromatic_caramel", CATA_all,ignore.case = T), "1",
+                                                                                      if_else(grepl("caramel", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_sweetaromatic_honey = if_else(grepl("sweetaromatic_honey", CATA_all,ignore.case = T), "1",
+                                                                                    if_else(grepl("honey", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_sweetaromatic_sugarcane = if_else(grepl("sweetaromatic_sugarcane", CATA_all,ignore.case = T), "1",
+                                                                                        if_else(grepl("sugar cane", DescCoded, ignore.case=T), "1", "0")))     
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_sweetaromatic_toffee = if_else(grepl("sweetaromatic_toffee", CATA_all,ignore.case = T), "1",
+                                                                                     if_else(grepl("toffee", DescCoded, ignore.case=T), "1", "0"))) 
+    
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_vegetal = if_else(grepl("vegetal", CATA_all,ignore.case = T), "1",
+                                                                        if_else(grepl("vegetal", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_vegetal_carrots = if_else(grepl("vegetal_carrots", CATA_all,ignore.case = T), "1",
+                                                                                if_else(grepl("carrots", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_vegetal_celery = if_else(grepl("vegetal_celery", CATA_all,ignore.case = T), "1",
+                                                                               if_else(grepl("celery", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_vegetal_corn = if_else(grepl("vegetal_corn", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("corn", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_vegetal_corn_cooked = if_else(grepl("vegetal_corn_cooked", CATA_all,ignore.case = T), "1",
+                                                                                    if_else(grepl("cooked corn", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_vegetal_cucumber = if_else(grepl("vegetal_cucumber", CATA_all,ignore.case = T), "1",
+                                                                                 if_else(grepl("cucumber", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_vegetal_peas = if_else(grepl("vegetal_peas", CATA_all,ignore.case = T), "1",
+                                                                             if_else(grepl("peas", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_waxy = if_else(grepl("waxy", CATA_all,ignore.case = T), "1",
+                                                                     if_else(grepl("waxy", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_waxy_fat = if_else(grepl("waxy_fat", CATA_all,ignore.case = T), "1",
+                                                                         if_else(grepl("fat", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_waxy_oil = if_else(grepl("waxy_oil", CATA_all,ignore.case = T), "1",
+                                                                         if_else(grepl("oil", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_waxy_soap = if_else(grepl("waxy_soap", CATA_all,ignore.case = T), "1",
+                                                                          if_else(grepl("soap", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_waxy_tallow = if_else(grepl("waxy_tallow", CATA_all,ignore.case = T), "1",
+                                                                            if_else(grepl("tallow", DescCoded, ignore.case=T), "1", "0"))) 
+    
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_woody = if_else(grepl("woody", CATA_all,ignore.case = T), "1",
+                                                                      if_else(grepl("woody", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_woody_eucalyptus = if_else(grepl("woody_eucalyptus", CATA_all,ignore.case = T), "1",
+                                                                                 if_else(grepl("eucalyptus", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_woody_oak = if_else(grepl("woody_oak", CATA_all,ignore.case = T), "1",
+                                                                          if_else(grepl("oak", DescCoded, ignore.case=T), "1", "0"))) 
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_woody_pine = if_else(grepl("woody_pine", CATA_all,ignore.case = T), "1",
+                                                                           if_else(grepl("pine", DescCoded, ignore.case=T), "1", "0")))
+  
+  BF2.Comb.binary <- BF2.Comb.binary %>% mutate(aroma_woody_cedar = if_else(grepl("woody_cedar", CATA_all,ignore.case = T), "1",
+                                                                           if_else(grepl("cedar", DescCoded, ignore.case=T), "1", "0")))
+
+
+
+# added mouthfeel, taste, aroma before each attribute to help with XLSTAT analysis
+  
+write.csv(BF2.Comb.binary,"BF2.Comb.binary.csv")
+
+#create smooth column that is 1 if either particulate smooth or small bubble size are 1
+
+```
+
+# Comb Cochran's Q test on Binary Data
+```{r, message = F, warning = F}
+# prepare and organize data
+Comb.CochQ = read.csv("BF2.Comb.binary.uniqueID.csv")
+
+str(Comb.CochQ)
+colnames(Comb.CochQ)
+head(Comb.CochQ)
+
+Comb.CochQ = Comb.CochQ[,-c(4,5)] #remove Comb column with term series (Term,Term,Term)
+
+rownames(Comb.CochQ) = Comb.CochQ[,1] # set Unique as row names
+Comb.CochQ = Comb.CochQ[,-1] #remove Unique column
+
+colnames(Comb.CochQ)
+
+# load library for Cochran Q test
+library(DescTools)
+
+# use lapply to run Cochrans Q test across attributes in the data frame
+colnames(Comb.CochQ)[3] # first attribute columm; confirm
+colnames(Comb.CochQ)[137] # first attribute columm; confirm
+
+#lapply for anovas
+
+CochQ_list<- lapply(names(Comb.CochQ[,c(3:137)]), function(x) CochranQTest(formula(paste0(x, 
+            "~ Genotype | Panelist")), data=Comb.CochQ))
+
+names(CochQ_list)<-names(Comb.CochQ[,c(3:137)])
+
+CochQ_results_Comb <- data.frame(
+  attribute = names(Comb.CochQ[,c(3:137)]),
+  statistic = sapply(CochQ_list, "[[", "statistic"),
+  pvalue = sapply(CochQ_list, "[[", "p.value")
+)
+
+write.csv(CochQ_results_Comb, "Comb_CochQ_results.csv")
+```
+
+## Create contingency table - All
+```{r, message = F, warning=F}
+# using binary data frame
+library(dplyr)
+
+BF2.Comb.binary <- read.csv("BF2.Comb.binary.csv")
+str(BF2.Comb.binary)
+
+BF2.Comb.binary <- subset(BF2.Comb.binary, select=-c(Panelist, CATA_all, DescCoded))
+
+str(BF2.Comb.binary)
+colnames(BF2.Comb.binary)
+
+Comb_CT <- BF2.Comb.binary %>% 
+  group_by(Genotype) %>% 
+  summarise_all(funs(sum))
+
+
+write.csv(Comb_CT, "BF_Comb_All_contingTable.csv") 
+```
+
+## Correspondence Analysis
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+library(factoextra)
+library(SensoMineR)
+
+Comb_CT = read.csv("BF_Comb_strict_cleaned.csv") 
+colnames(Comb_CT)
+
+rownames(Comb_CT) = Comb_CT[,1]
+Comb_CT = Comb_CT[,-1]
+
+res.all.Comb = CA(Comb_CT, graph = FALSE) #changed to MCA from CA
+print(res.all.Comb)
+```
+
+## Visualization and Interpretation
+### Eigenvalues/Variances
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+eig.val <- get_eigenvalue(res.all.Comb)
+eig.val
+
+fviz_screeplot(res.all.Comb, addlabels = TRUE, ylim = c(0,65))
+
+```
+
+The first two dimensions account for 48.4% and 33.5% of the variance, combining to account for 70.4% of the cumulative variance.
+
+### Symmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+
+all_symm = fviz_ca_biplot(res.all.Comb,
+               geom.row = c("point","text"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point","text"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               repel = T, 
+               title= "")
+all_symm
+
+# no labels
+all_symm.naked = fviz_ca_biplot(res.all.Comb,
+               geom.row = c("point"),
+               shape.row = 19,
+               col.row = "black",
+               geom.col = c("point"),
+               shape.col = 17,
+               col.col = "grey",
+               label = "all",
+               pointsize=3,
+               repel = T, 
+               title= "")
+all_symm.naked
+
+```
+
+This is the symmetric plot for the Beer Comb analysis. The distance between any row points (genotypes) or columns (attributes) gives a measure of their similarity (or dissimilarity). 
+
+
+### Symmetric Biplot - Contributions
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+# repel = TRUE to avoid text overlapping (slow if many points)
+fviz_ca_biplot(res.all.Comb, col.row=contrib, gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), 
+repel = TRUE, title = "Beer Comb")
+
+```
+
+### Asymmetric Biplot
+```{r, warning=FALSE,message=FALSE, echo=FALSE}
+fviz_ca_biplot(res.all.Comb, map="colprincipal", arrow=c(TRUE,TRUE),repel = TRUE)
+
+# labels
+fviz_ca_biplot(res.all.Comb, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+
+# labels - no arrows
+fviz_ca_biplot(res.all.Comb, 
+               map="colprincipal",
+               #arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               title = "") # rows represented in column space
+# naked
+# naked
+all.asymm.naked <- fviz_ca_biplot(res.all.Comb, 
+               map="colprincipal",
+               arrow=c(TRUE,TRUE),
+               geom.row = c("point","text"),
+               col.row = "black",
+               geom.col = c("point","text"),
+               col.col = "grey",
+               shape.col = 17,
+               shape.row = 19,
+               scale.unit = T,
+               repel = TRUE,
+               label ="none",
+               title = "") # rows represented in column space
+all.asymm.naked
+```
+
+"If the angle between two arrows is acute, then their is a strong association between the corresponding row and column."
+
+#Comb Correlation
+## Comb Attributes w/ Rank
+```{r, warning = F, message = F}
+# Load required libraries
+rm(list=ls())
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+library(tidytext)
+library(stringr)
+library(corrplot)
+library(Hmisc)
+
+
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+dir()
+```
+
+## read in data frames
+```{r, warning=F, message=F}
+BF2_CombRank = read.csv("BF2_Comb_StrictRank.csv", header = T) 
+
+colnames(BF2_CombRank)
+
+# set up for matrix
+BF2_CombRank_mat = subset(BF2_CombRank, select =-c(Panelist, Genotype, CATA_all, DescCoded, Rank))
+rownames(BF2_CombRank_mat) = BF2_CombRank_mat[,1]
+BF2_CombRank_mat = BF2_CombRank_mat[,-1]
+
+# run spearman correlation
+corr.CombRank = rcorr(as.matrix(BF2_CombRank_mat), type = "spearman")
+
+# view results
+CombRankCorrCoeff <- corr.CombRank$r
+CombRankCorrP <- round(corr.CombRank$P, 4)
+
+# visualize correlation matrix
+
+CorrPlotCombRank <- corrplot(corr.CombRank$r,
+                             sig.level = 0.05,
+                             insig = "pch",
+                             method = "circle",
+                             type = "upper",
+                             order = "hclust",
+                             p.mat = corr.CombRank$P)
+```
+ 
+# Text Mining
+## Open Description
+```{r, warning = F, message = F}
+#https://ourcodingclub.github.io/tutorials/qualitative/
+# Load required libraries
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(tidytext)
+library(R.utils)
+library(wordcloud)
+library(rlang)
+
+BF2 <- read.csv("BrewFest_Quest_Rank_aromaCATA_cleaned.csv")
+
+# Prep Wide CATA df
+colnames(BF2)
+BF2.Desc.wide = BF2[,c(1, 21:24)]
+colnames(BF2.Desc.wide)
+str(BF2.Desc.wide)
+
+# Save as .csv to manually GATHER character columns
+write.csv(BF2.Desc.wide, "BF2.Desc.wide.csv")
+  # changed flora to floral 
+
+# Read in cleaned versione
+BF2.Desc.long_cleaned = read.csv("BF2.Desc.wide_cleaned.csv")
+
+colnames(BF2.Desc.long_cleaned)
+str(BF2.Desc.long_cleaned)
+
+# Convert Desc columns from factor to character
+BF2.Desc.long_cleaned$Desc <- as.character(BF2.Desc.long_cleaned$Desc)
+str(BF2.Desc.long_cleaned)
+
+# split Desc comments
+data("stop_words")
+
+Desc_tidy <- BF2.Desc.long_cleaned %>%
+	group_by(Genotype) %>%
+	unnest_tokens(output = Aroma_attribute,
+		input = Desc) %>%
+	anti_join(stop_words, by = c("Aroma_attribute" = "word")) %>%
+	count(Aroma_attribute, sort = TRUE)  %>%
+  
+  # next lines are QAQC 
+    # only keep words that are metnion n > X times
+    # remove NA values
+	filter(n > 1) %>% 
+	filter(!is.na(Aroma_attribute))
+```
+
+## Check for association between words https://www.tidytextmining.com/ngrams.html
+
+
+### Visualization of Desc Text Mining 
+#### Bar Chart
+```{r, warning = F, message = F}
+(occurrence <- ggplot(Desc_tidy, aes(x = Aroma_attribute, y = n, fill = Genotype)) + 
+	geom_bar(stat = "identity") + 
+	coord_flip() + 
+	scale_fill_manual(values = brewer.pal(4, "Set3")) + 
+	theme_classic())
+```
+
+
+
+
+

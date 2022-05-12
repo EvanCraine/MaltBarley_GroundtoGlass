@@ -1,0 +1,275 @@
+---
+title: "Commercial Malt Quality and Beer Rank Analysis"
+author: "Evan Craine"
+date: "3/10/2020"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(message=F,warning=F,echo=T,fig_height=10,fig_width=7,cache=F)
+```
+
+```{r, include=FALSE}
+# Clean Workspace
+rm(list=ls())
+
+# Install Packages
+
+#install.packages("tidyr")
+#install.packages("dplyr")
+#install.packages ("sqldf")
+#install.packages("lme4")
+#install.packages("afex")
+#install.packages("broom")
+#install.packages("agricolae")
+
+
+# Call libraries
+library(knitr)
+library (tidyr)
+library (dplyr)
+library(lme4)
+library(afex)
+library(broom)
+library(agricolae)
+library(cluster)
+library(grDevices)
+library(psych)
+library(car)
+library(ggpubr)
+library(corrplot)
+library(ggbiplot)
+
+
+# Set Working Directory
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R2")
+
+# Directory Inventory
+dir()
+```
+
+
+# Gold Rush Malt Quality
+```{r, include=F}
+GR.MQ = read.csv("18_hartwick_GoldRush_unreplicated_working.csv")
+str(GR.MQ)
+
+GR.MQ$Genotype <- as.factor(GR.MQ$Genotype)
+```
+
+# PCA
+```{r, message=F, include=F}
+library(factoextra)
+library(SensoMineR)
+GR.PCA = GR.MQ
+
+rownames(GR.PCA) = GR.PCA[,1]
+
+GR.PCA = GR.PCA[,-1]
+
+res.PCA = PCA(GR.PCA, scale.unit=T)
+
+# labels
+resGR.viz = fviz_pca_biplot(res.PCA,
+                            geom = "text",
+                       geom.ind = c("point", "text"),
+                       col.ind = rownames(GR.PCA),
+                       palette = "grey",
+                       col.var = "black",
+                       mean.point=F,
+                       title = "",
+                       repel = T)
+plotGRMQ <- resGR.viz + theme(legend.position = "none")
+
+plotGRMQ
+tiff(file="2018Tumwater_PCA_MQGoldRush_Unrep.tiff",
+width=87.3, height=4, units="mm", res=100)
+dev.off()
+
+
+# no labels
+resGR.viz.naked = fviz_pca_biplot(res.PCA,
+                            geom = "text",
+                       geom.ind = c("point"),
+                      geom.var = "arrow",
+                      palette = "grey",
+                       col.var = "black",
+                       mean.point=F,
+                       title = "",
+                       repel = T)
+resGR.viz.naked + theme(legend.position = "none")
+```
+
+# Probit - Malt Quality and Rank
+## required packages
+```{r, include=F}
+require(foreign)
+require(ggplot2)
+require(MASS)
+require(Hmisc)
+require(reshape2)
+```
+## read in data frames
+```{r, include=F}
+probit.MQR = read.csv("BF_maltQuality_Rank.csv", header = T)
+str(probit.MQR)
+
+# change rank to factor and order
+probit.MQR$rank <- ordered(probit.MQR$rank, levels = c("4","3","2","1"))
+```
+
+## visualize
+### trait
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = trait)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### Moisture
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = Moisture)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### Friability
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = Friability)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### FGME
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = FGME)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### Color
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = Color)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### bG
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = bG)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### SP
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = SP)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### TP
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = TP)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### KI
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = KI)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### FAN
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = FAN)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### DP
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = DP)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+### aa
+```{r, include=F}
+ggplot(probit.MQR, aes(x = rank, y = aA)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+## probit model with polr from MASS - all data
+```{r, include=F}
+colnames(probit.MQR)
+m <- polr(rank ~ Moisture + Friability + FGME + Color + bG + SP + TP + KI + FAN + DP + aA, data = probit.MQR, Hess = TRUE)
+
+summary(m)
+
+# store table
+ctable<- coef(summary(m))
+
+# calculate and store p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+# combined table
+(ctable <- cbind(ctable, "p value" = p))
+
+# confidence intervals
+(ci <- confint(m))
+
+confint.default(m)
+
+```
+
+
+## probit model with polr from MASS - median rank
+```{r, include=F}
+colnames(probit.MQR)
+m <- polr(rank ~ Moisture + Friability + FGME + Color + bG + SP + TP + KI + FAN + DP + aA, data = probit.MQR, Hess = TRUE)
+
+summary(m)
+
+# store table
+ctable<- coef(summary(m))
+
+# calculate and store p values
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+
+# combined table
+(ctable <- cbind(ctable, "p value" = p))
+
+# confidence intervals
+(ci <- confint(m))
+
+confint.default(m)
+
+```
+
+# logistic regression model with lrm from rms 
+```{r, include=F}
+require(rms)
+
+l <- lrm(formula = rank ~ Moisture + Friability + FGME + Color + bG + SP + TP + KI + FAN + DP + aA, data = probit.MQR)
+
+```
+
+```

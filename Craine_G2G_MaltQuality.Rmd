@@ -1,0 +1,1957 @@
+---
+title: "2018 Malt Quality: Comparing Maltsters"
+author: "Evan Craine"
+date: "3/10/2020"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(message=F,warning=F,echo=T,fig_height=10,fig_width=7,cache=F)
+```
+
+```{r, include=FALSE}
+# Clean Workspace
+rm(list=ls())
+
+# Install Packages
+
+#install.packages("tidyr")
+#install.packages("dplyr")
+#install.packages ("sqldf")
+#install.packages("lme4")
+#install.packages("afex")
+#install.packages("broom")
+#install.packages("agricolae")
+
+
+# Call libraries
+library(knitr)
+library (tidyr)
+library (dplyr)
+library(lme4)
+library(afex)
+library(broom)
+library(agricolae)
+library(cluster)
+library(grDevices)
+library(psych)
+library(car)
+library(ggpubr)
+library(corrplot)
+library(ggbiplot)
+
+
+# Set Working Directory
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R1")
+
+# Directory Inventory
+dir()
+```
+
+
+# Gold Rush Malt Quality
+```{r, include=F}
+GR.MQ = read.csv("18_hartwick_GoldRush_unreplicated_working.csv")
+str(GR.MQ)
+
+GR.MQ$Genotype <- as.factor(GR.MQ$Genotype)
+```
+
+## PCA
+```{r, message=F, include=F}
+library(factoextra)
+library(SensoMineR)
+GR.PCA = GR.MQ
+
+rownames(GR.PCA) = GR.PCA[,1]
+
+GR.PCA = GR.PCA[,-1]
+
+res.PCA = PCA(GR.PCA, scale.unit=T)
+
+# labels
+resGR.viz = fviz_pca_biplot(res.PCA,
+                            geom = "text",
+                       geom.ind = c("point", "text"),
+                       col.ind = rownames(GR.PCA),
+                       palette = "grey",
+                       col.var = "black",
+                       mean.point=F,
+                       title = "",
+                       repel = T)
+plotGRMQ <- resGR.viz + theme(legend.position = "none")
+
+plotGRMQ
+tiff(file="2018Tumwater_PCA_MQGoldRush_Unrep.tiff",
+width=87.3, height=4, units="mm", res=100)
+dev.off()
+
+tiff(file="brewfest_Figure2_PCAgoldrush_pubReady.tiff",
+width=1100, height=1211, units="px", res=300)
+plotGRMQ
+dev.off()
+
+
+# no labels
+resGR.viz.naked = fviz_pca_biplot(res.PCA,
+                            geom = "text",
+                       geom.ind = c("point"),
+                      geom.var = "arrow",
+                      palette = "grey",
+                       col.var = "black",
+                       mean.point=F,
+                       title = "",
+                       repel = T)
+resGR.viz.naked + theme(legend.position = "none")
+```
+
+# Comparing Maltsters (CCRU, Hartwick)
+## Questions
+How does entry and maltster influence malt quality traits?
+
+How are malt quality traits related?
+
+## Entry Levels
+
+*	10WA-117.17 (117.17)
+*	12WA-120.14 (120.14)
+*	12WA-120.17 (120.17)
+* CDC-Copeland (Copeland; control variety)
+
+## Maltster Levels
+
+
+*	1
+*	2
+
+## Rep levels 
+
+*	1
+*	2
+* 3
+
+
+# Malt Quality Traits
+* Barley Protein (Barley_Protein) - % (do not have for OSU)
+* Plumpness (PLMP) - % (do not have for OSU)
+*	Fine Grind Malt Extract (FGME) - % dry basis
+*	Soluble Protein (SP) - % 
+*	Soluble/Total Protein (KI) - % 
+*	Beta glucan (bG) - ppm
+*	Diastatic Power (DP) - degrees Lintner (Hartwick); degrees ASBC (CCRU)
+*	Alpha amylase (aA) - D.U. (Hartwick) 20 degree D.U. (CCRU)
+*	Free amino nitrogen (FAN) – ppm
+
+# Data Exploration
+
+## Check structure
+
+```{r, warning=FALSE, message=FALSE}
+# Load Data
+MH.Comp <- read.csv("2018_MaltQuality_CCRU_Hartwick_repped_Cleaned.csv", header = TRUE)
+
+str(MH.Comp)
+
+MH.Comp$Rep <- as.factor(MH.Comp$Rep)
+
+str(MH.Comp)
+```
+
+# Effects of Entry and Maltster on Malt Quality Traits
+
+## Barley Protein
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+BP.aov <- aov(BP ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(BP.aov) 
+```
+
+Significant (p = 0.0328) effect of entry on BP.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-BP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(BP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = BP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(BP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(BP.aov, which = "Entry")
+BP.HSD.Genotype <- HSD.test(BP.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(BP.HSD.Genotype, main = 'BP - Entry')
+```
+
+No separation of entries based on barley protein (BP).
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(BP.aov, which = "Maltster") 
+BP.HSD.Maltster <- HSD.test(BP.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(BP.HSD.Maltster, main = 'BP - Maltster')
+```
+
+No effect of Maltster (Harwtick or CCRU) on BP. 
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$BP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="BP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## Plumpness (PLMP)
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+PLMP.aov <- aov(PLMP ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(PLMP.aov) 
+```
+
+Marginally significant ( p < 0.1) effect of Entry or Maltster on PLMP. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-PLMP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(PLMP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = PLMP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(PLMP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(PLMP.aov, which = "Entry")
+PLMP.HSD.Genotype <- HSD.test(PLMP.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(PLMP.HSD.Genotype, main = 'PLMP - Entry')
+```
+
+No effect of Entry on PLMP. 
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(PLMP.aov, which = "Maltster") 
+PLMP.HSD.Maltster <- HSD.test(PLMP.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(PLMP.HSD.Maltster, main = 'PLMP - Maltster')
+```
+
+No effect of Maltster on PLMP. 
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$PLMP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="PLMP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+
+## Fine Grind Malt Extract (FGME)
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+FGME.aov <- aov(FGME ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(FGME.aov) 
+```
+
+Significant effect of entry on FGME. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-FGME.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(FGME.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = FGME.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(FGME.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(FGME.aov, which = "Entry")
+FGME.HSD.Genotype <- HSD.test(FGME.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(FGME.HSD.Genotype, main = 'FGME - Entry')
+```
+
+Copeland has higher FGME than 117.17. 120.17 and 120.17 share letters with Copeland and 117.17
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(FGME.aov, which = "Maltster") 
+FGME.HSD.Maltster <- HSD.test(FGME.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(FGME.HSD.Maltster, main = 'FGME - Maltster')
+```
+
+No effect of maltster on FGME.
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$FGME, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="FGME",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+FGME generally increased from CCRU to Hartwick; however, 120.17 FGME decreased from CCRU to Hartwick.
+
+
+# Soluble Protein (Wort Protein) (SP)
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+SP.aov <- aov(SP ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(SP.aov) 
+```
+
+Highly significant effec of entry on SP (p < 0.001), and marginally significant effect of maltster on SP. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-SP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(SP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = SP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(SP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(SP.aov, which = "Entry")
+SP.HSD.Genotype <- HSD.test(SP.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(SP.HSD.Genotype, main = 'SP - Entry')
+```
+
+117.17 had significantly lower SP than the other entries. 
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(SP.aov, which = "Maltster") 
+SP.HSD.Maltster <- HSD.test(SP.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(SP.HSD.Maltster, main = 'SP - Maltster')
+```
+
+No mean seperation between maltsters based on SP. 
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$SP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="SP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+SP remained relatively stable between CCRU and Hartwick for Copeland, 120.14 and 120.17. SP was significantly lower for 117.17 compared to the other genotypes, and decreased from CCRU to Hartwick.
+
+# Soluble/Total Protein (KI)
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+KI.aov <- aov(KI ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(KI.aov) 
+```
+
+Entry and Maltster had an effect on KI. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-KI.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(KI.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = KI.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(KI.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(KI.aov, which = "Entry")
+KI.HSD.Genotype <- HSD.test(KI.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(KI.HSD.Genotype, main = 'KI - Entry')
+```
+
+Copeland had significantly higher KI than 120.14, 120.17 and 117.17, while 120.14 and 120.17 had significantly higher KI than 117.17. High Ki is an indication of a greater degree of modification; Copeland was more modified than the other entries, and 117.17 was the least modified with respect to KI. 
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(KI.aov, which = "Maltster") 
+KI.HSD.Maltster <- HSD.test(KI.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(KI.HSD.Maltster, main = 'KI - Maltster')
+```
+
+CCRU had higher KI than Hartwick.
+
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$KI, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="KI",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+KI generally decreased from CCRU to Hartwick; however, 120.17 and 120.14 switched ranks.
+
+# Betaglucans (bG)
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+bG.aov <- aov(bG ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(bG.aov) 
+```
+
+Entry and maltster had a highly significant effect on bG. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-bG.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(bG.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = bG.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(bG.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(bG.aov, which = "Entry")
+bG.HSD.Genotype <- HSD.test(bG.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(bG.HSD.Genotype, main = 'bG - Entry')
+```
+
+117.17 had significantly higher bG than 120.14, Copeland and 120.17. 120.14 had higher bG than 120.17. bG was statistically insignificant between Copeland and 120.17.
+
+Base on the results for KI, we would expect 117.17 to have higher bG (less modification) than the other entries. The results for bg support this result; however, 120.17 had the lowest bG instead of Copeland. 
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(bG.aov, which = "Maltster") 
+bG.HSD.Maltster <- HSD.test(bG.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(bG.HSD.Maltster, main = 'bG - Maltster')
+```
+
+CCRU had higher bG than Hartwick, with CCRU have greater variation than Hartwick. 
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$bG, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="bG",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+bG generally decreased from CCRU to Harwtick, with less variation among entries for Hartwick.
+
+# Diastatic Power (DP)
+
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+DP.aov <- aov(DP ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(DP.aov) 
+```
+
+Entry and maltster had an effect on DP. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-DP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(DP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = DP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(DP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(DP.aov, which = "Entry")
+DP.HSD.Genotype <- HSD.test(DP.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(DP.HSD.Genotype, main = 'DP - Entry')
+```
+
+120.17 and 120.14 had high DP than 117.17. Copeland DP was statistically indifferent from the other entries. 
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(DP.aov, which = "Maltster") 
+DP.HSD.Maltster <- HSD.test(DP.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(DP.HSD.Maltster, main = 'DP - Maltster')
+```
+
+Hartwick had higher DP than CCRU.
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$DP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="DP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+DP generally increased from OSu to Hartwick.
+
+# alpha amylase (aA)
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+aA.aov <- aov(aA ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(aA.aov) 
+```
+
+Entry and maltster had an effect on aA.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-aA.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(aA.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = aA.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(aA.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(aA.aov, which = "Entry")
+aA.HSD.Genotype <- HSD.test(aA.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(aA.HSD.Genotype, main = 'aA - Entry')
+```
+
+120.14, Copeland and 120.17 had higher aA than 117.17. 
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(aA.aov, which = "Maltster") 
+aA.HSD.Maltster <- HSD.test(aA.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(aA.HSD.Maltster, main = 'aA - Maltster')
+```
+
+CCRU had higher aA than Hartwick, with greater variation.
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$aA, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="aA",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+aA decreased from CCRU to Hartwick for 120.14, 120.17 and Copeland and increased for 117.17. Copeland had the highest aA at CCRU, and third highest at Hartwick. 
+
+# FAN
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+FAN.aov <- aov(FAN ~ Entry + Maltster, data = MH.Comp, na.action=na.exclude)
+summary(FAN.aov) 
+```
+
+Entry and maltster had an effect on FAN. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-FAN.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(FAN.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = FAN.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(FAN.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(FAN.aov, which = "Entry")
+FAN.HSD.Genotype <- HSD.test(FAN.aov, "Entry", alpha = 0.05, group = TRUE)
+plot(FAN.HSD.Genotype, main = 'FAN - Entry')
+```
+
+120.14, Copeland and 120.17 had higher FAN than 117.17. 
+
+### Tukey HSD (Maltster)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(FAN.aov, which = "Maltster") 
+FAN.HSD.Maltster <- HSD.test(FAN.aov, "Maltster", alpha = 0.05, group = TRUE)
+plot(FAN.HSD.Maltster, main = 'FAN - Maltster')
+```
+
+Hartwick had higher FAN than CCRU.
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$FAN, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="FAN",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+FAN increased from CCRU to Hartwick. 
+
+#### Correlation Plot with Ward Clustering (insignificant correlations are blank)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+colnames(MH.Comp)
+MH.CompOverall=cor(MH.Comp[,c(6:14)], use="na.or.complete")
+corrplot(MH.CompOverall, sig.level = 0.05, insig = "blank", order = "hclust", hclust.method = "ward")
+```
+
+#### Heatmap for correlations (overlays a hierarchical clustering tree)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+col<- colorRampPalette(c("blue", "white", "red"))(20)
+heatmap(x = MH.CompOverall, col = col, symm = TRUE)
+```
+
+Red represents a correlation coefficient of positive 1, as shown along the diagonal. Blue represents negative correlation coefficients. White represents correlation coefficients of zero. 
+
+
+# Principal Component Analysis - Malthouse
+## Prep Data
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+library(agricolae)
+library(SensoMineR)
+library(factoextra)
+MQ.para=MH.Comp[,c(6:14)]
+
+colnames(MQ.para)
+
+MH.Comp$ID2=paste0(MH.Comp$Entry, ".", MH.Comp$Maltster)
+
+MQ.para.mean = aggregate(MQ.para, list(MH.Comp$ID2), mean, na.rm=TRUE)
+
+head(MQ.para.mean, 6)
+
+rownames(MQ.para.mean) = MQ.para.mean[,1]
+MQ.para.mean = MQ.para.mean[,-1]
+```
+
+```{r, warning=F, message=F}
+resB = PCA(MQ.para.mean, scale.unit = T)
+
+# labels
+resB.viz = fviz_pca_biplot(resB,
+                            geom = "text",
+                       geom.ind = c("point", "text"),
+                       col.ind = rownames(MQ.para.mean),
+                       palette = "grey",
+                       col.var = "black",
+                       mean.point=F,
+                       title = "",
+                       repel = T)
+resB.viz + theme(legend.position = "none")
+
+# no labels
+resB.viz.naked = fviz_pca_biplot(resB,
+                            geom = "text",
+                       geom.ind = c("point"),
+                      geom.var = "arrow",
+                      palette = "grey",
+                       col.var = "black",
+                       mean.point=F,
+                       title = "",
+                       repel = T)
+resB.viz.naked + theme(legend.position = "none")
+
+```
+
+
+# CCRU and Hartwick combined (repped)
+```{r, include=FALSE}
+# Clean Workspace
+rm(list=ls())
+
+# Install Packages
+
+#install.packages("tidyr")
+#install.packages("dplyr")
+#install.packages ("sqldf")
+#install.packages("lme4")
+#install.packages("afex")
+#install.packages("broom")
+#install.packages("agricolae")
+
+
+# Call libraries
+library(knitr)
+library (tidyr)
+library (dplyr)
+library(lme4)
+library(afex)
+library(broom)
+library(agricolae)
+library(cluster)
+library(grDevices)
+library(psych)
+library(car)
+library(ggpubr)
+library(corrplot)
+library(ggbiplot)
+
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+
+
+# Set Working Directory
+setwd("~/Dropbox/evan.craine@wsu.edu/MALT BARLEY/SENSORY/2018_Tumwater/Manuscript/Analysis/R1")
+
+# Directory Inventory
+dir()
+```
+
+```{r, warning=FALSE, message=FALSE}
+# Load Data
+MH.Comp <- read.csv("2018_MaltQuality_CCRU_Hartwick_repped_Cleaned.csv", header = TRUE)
+
+str(MH.Comp)
+
+MH.Comp$Rep <- as.factor(MH.Comp$Rep)
+
+str(MH.Comp)
+```
+
+# Summary Statistics
+### using gtsummary
+```{r,warning = F, message = F}
+library(gtsummary)
+library(tidyverse)
+
+colnames(MH.Comp)
+str(MH.Comp)
+
+
+# remove (crude protein as is & AAs & infl traits) and reorder traits
+MQ.Traits = c(
+            "BP",
+            "PLMP",
+            "FGME",
+            "SP",
+            "KI",
+            "bG",
+            "DP",
+            "aA",
+            "FAN")
+
+# all traits - except infl traits - no grouping
+Desc_out1 <- MH.Comp %>%
+  select(MQ.Traits) %>%
+  tbl_summary(
+    statistic = all_continuous() ~ "{mean} ({sd}) [{min}-{max}]",
+    label = list(
+      BP ~ "Barley Protein (%, DB)",
+      PLMP ~ "Kernel Plump (on 6/64in)",
+      FGME ~ "Malt Extract (%)",
+      SP ~ "Soluble Protein (%)",
+      KI ~ "S/T (%)",
+      bG ~ "Beta-Glucan (ppm)",
+      DP ~ "Diastatic Power (°L.)",
+      aA ~ "Alpha Amylase (D.U.)",
+      FAN ~ "FAN (mG/L)"
+      ),
+  missing = "no") %>%
+  add_n()
+
+Desc_out1 <- Desc_out1 %>%
+    modify_header(
+    update = label ~ "**Trait**"
+    )
+  
+Desc_out1
+
+# all traits - grouped by Malster
+Desc_out2 <-MH.Comp %>%
+  select(MQ.Traits, Maltster) %>%
+  tbl_summary(
+    statistic = all_continuous() ~ "{mean} ({sd}) [{min}-{max}]",
+    label = list(
+      BP ~ "Barley Protein (%, DB)",
+      PLMP ~ "Kernel Plump (on 6/64in)",
+      FGME ~ "Malt Extract (%)",
+      SP ~ "Soluble Protein (%)",
+      KI ~ "S/T (%)",
+      bG ~ "Beta-Glucan (ppm)",
+      DP ~ "Diastatic Power (°L.)",
+      aA ~ "Alpha Amylase (D.U.)",
+      FAN ~ "FAN (mG/L)"
+      ),
+    by = Maltster,
+  missing = "no") %>%
+  add_n()
+
+Desc_out2
+
+#Desc_out2 <- Desc_out2 %>% add_overall()
+
+Desc_out2 <- Desc_out2 %>%
+   modify_header(
+    update = label ~ "**Trait**"
+    )
+
+Desc_out2 <- Desc_out2 %>%
+  add_p()
+
+
+## save 
+gt::gtsave(as_gt(Desc_out1), file = file.path("~/Dropbox/evan.craine@wsu.edu/QUINOA/2018GH/Manuscript/FiguresTables/Rout", "Desc_out1.PDF"),
+           expand = 1)
+
+gt::gtsave(as_gt(Desc_out2), file = file.path("~/Dropbox/evan.craine@wsu.edu/QUINOA/2018GH/Manuscript/FiguresTables/Rout", "Desc_out2.PDF"),
+           expand = 1)
+
+gt::gtsave(as_gt(Desc_out1), file = file.path("~/Dropbox/evan.craine@wsu.edu/QUINOA/2018GH/Manuscript/FiguresTables/Rout", "Desc_out1.rtf"),
+           expand = 1)
+
+gt::gtsave(as_gt(Desc_out2), file = file.path("~/Dropbox/evan.craine@wsu.edu/QUINOA/2018GH/Manuscript/FiguresTables/Rout", "Desc_out2.rtf"),
+           expand = 1)
+
+```
+
+#Visualization
+## Barley Protein
+```{r, message=F, warning=F}
+
+bxp <- ggboxplot(
+  MH.Comp, x = "Entry", y = "BP",
+  color = "Maltster", palette = "jco",
+  #facet.by =  "Maltster"
+  )
+bxp
+```
+
+## TRAIT
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+TRAIT.aov <- aov(TRAIT ~ Entry * Maltster + Rep, data = MH.Comp, na.action=na.exclude)
+summary(TRAIT.aov) 
+```
+
+No interaction between entry and maltster. 
+
+Entry and Rep have an effect on Barley protein.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-TRAIT.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(TRAIT.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = TRAIT.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(TRAIT.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(TRAIT.aov, which = "Maltster")
+TRAIT.HSD.maltster <- HSD.test(TRAIT.aov, "Maltster", alpha = 0.05, group = TRUE)
+TRAIT.HSD.maltster$means
+plot(TRAIT.HSD.maltster, main = 'TRAIT - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+TRAIT.LSD.maltster <- LSD.test(TRAIT.aov, "Maltster")
+TRAIT.LSD.maltster
+
+TRAIT.LSD.maltster <- LSD.test(TRAIT.aov, "Maltster", p.adj = "bonferroni")
+TRAIT.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(TRAIT.aov, which = "Entry")
+TRAIT.HSD.Entry <- HSD.test(TRAIT.aov, "Entry", alpha = 0.05, group = TRUE)
+TRAIT.HSD.Entry$means
+plot(TRAIT.HSD.Entry, main = 'TRAIT - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+TRAIT.LSD.Entry <- LSD.test(TRAIT.aov, "Entry")
+TRAIT.LSD.Entry
+
+TRAIT.LSD.Entry <- LSD.test(TRAIT.aov, "Entry", p.adj = "bonferroni")
+TRAIT.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(TRAIT.aov, which = "Rep") 
+TRAIT.HSD.Rep <- HSD.test(TRAIT.aov, "Rep", alpha = 0.05, group = TRUE)
+TRAIT.HSD.Rep$means
+plot(TRAIT.HSD.Rep, main = 'TRAIT - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+TRAIT.LSD.Rep <- LSD.test(TRAIT.aov, "Rep")
+TRAIT.LSD.Rep
+
+TRAIT.LSD.Rep <- LSD.test(TRAIT.aov, "Rep", p.adj = "bonferroni")
+TRAIT.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$TRAIT, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="TRAIT",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+## Barley Protein
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+BP.aov <- aov(BP ~ Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(BP.aov) 
+```
+
+No interaction between maltster and entry. Entry and rep interaction is significant. 
+
+Entry and Rep have an effect on Barley protein.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-BP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(BP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = BP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(BP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(BP.aov, which = "Maltster")
+BP.HSD.maltster <- HSD.test(BP.aov, "Maltster", alpha = 0.05, group = TRUE)
+BP.HSD.maltster$means
+plot(BP.HSD.maltster, main = 'BP - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+BP.LSD.maltster <- LSD.test(BP.aov, "Maltster")
+BP.LSD.maltster
+
+BP.LSD.maltster <- LSD.test(BP.aov, "Maltster", p.adj = "bonferroni")
+BP.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(BP.aov, which = "Entry")
+BP.HSD.Entry <- HSD.test(BP.aov, "Entry", alpha = 0.05, group = TRUE)
+BP.HSD.Entry$means
+plot(BP.HSD.Entry, main = 'BP - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+BP.LSD.Entry <- LSD.test(BP.aov, "Entry")
+BP.LSD.Entry
+
+BP.LSD.Entry <- LSD.test(BP.aov, "Entry", p.adj = "bonferroni")
+BP.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(BP.aov, which = "Rep") 
+BP.HSD.Rep <- HSD.test(BP.aov, "Rep", alpha = 0.05, group = TRUE)
+BP.HSD.Rep$means
+plot(BP.HSD.Rep, main = 'BP - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+BP.LSD.Rep <- LSD.test(BP.aov, "Rep")
+BP.LSD.Rep
+
+BP.LSD.Rep <- LSD.test(BP.aov, "Rep", p.adj = "bonferroni")
+BP.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$BP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="BP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+### Entry, Rep
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Rep, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$BP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Rep", ylab="BP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## PLMP
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+PLMP.aov <- aov(PLMP ~ Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(PLMP.aov) 
+```
+
+No interaction between entry and maltster. 
+
+No effect of factos on trait. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-PLMP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(PLMP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = PLMP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(PLMP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(PLMP.aov, which = "Maltster")
+PLMP.HSD.maltster <- HSD.test(PLMP.aov, "Maltster", alpha = 0.05, group = TRUE)
+PLMP.HSD.maltster$means
+plot(PLMP.HSD.maltster, main = 'PLMP - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+PLMP.LSD.maltster <- LSD.test(PLMP.aov, "Maltster")
+PLMP.LSD.maltster
+
+PLMP.LSD.maltster <- LSD.test(PLMP.aov, "Maltster", p.adj = "bonferroni")
+PLMP.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(PLMP.aov, which = "Entry")
+PLMP.HSD.Entry <- HSD.test(PLMP.aov, "Entry", alpha = 0.05, group = TRUE)
+PLMP.HSD.Entry$means
+plot(PLMP.HSD.Entry, main = 'PLMP - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+PLMP.LSD.Entry <- LSD.test(PLMP.aov, "Entry")
+PLMP.LSD.Entry
+
+PLMP.LSD.Entry <- LSD.test(PLMP.aov, "Entry", p.adj = "bonferroni")
+PLMP.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(PLMP.aov, which = "Rep") 
+PLMP.HSD.Rep <- HSD.test(PLMP.aov, "Rep", alpha = 0.05, group = TRUE)
+PLMP.HSD.Rep$means
+plot(PLMP.HSD.Rep, main = 'PLMP - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+PLMP.LSD.Rep <- LSD.test(PLMP.aov, "Rep")
+PLMP.LSD.Rep
+
+PLMP.LSD.Rep <- LSD.test(PLMP.aov, "Rep", p.adj = "bonferroni")
+PLMP.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$PLMP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="PLMP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## FGME
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+FGME.aov <- aov(FGME ~ Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(FGME.aov) 
+```
+No interaction.
+
+Entry and Rep have a significant effect
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-FGME.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(FGME.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = FGME.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(FGME.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(FGME.aov, which = "Maltster")
+FGME.HSD.maltster <- HSD.test(FGME.aov, "Maltster", alpha = 0.05, group = TRUE)
+FGME.HSD.maltster$means
+plot(FGME.HSD.maltster, main = 'FGME - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+FGME.LSD.maltster <- LSD.test(FGME.aov, "Maltster")
+FGME.LSD.maltster
+
+FGME.LSD.maltster <- LSD.test(FGME.aov, "Maltster", p.adj = "bonferroni")
+FGME.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(FGME.aov, which = "Entry")
+FGME.HSD.Entry <- HSD.test(FGME.aov, "Entry", alpha = 0.05, group = TRUE)
+FGME.HSD.Entry$means
+plot(FGME.HSD.Entry, main = 'FGME - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+FGME.LSD.Entry <- LSD.test(FGME.aov, "Entry")
+FGME.LSD.Entry
+
+FGME.LSD.Entry <- LSD.test(FGME.aov, "Entry", p.adj = "bonferroni")
+FGME.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(FGME.aov, which = "Rep") 
+FGME.HSD.Rep <- HSD.test(FGME.aov, "Rep", alpha = 0.05, group = TRUE)
+FGME.HSD.Rep$means
+plot(FGME.HSD.Rep, main = 'FGME - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+FGME.LSD.Rep <- LSD.test(FGME.aov, "Rep")
+FGME.LSD.Rep
+
+FGME.LSD.Rep <- LSD.test(FGME.aov, "Rep", p.adj = "bonferroni")
+FGME.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$FGME, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="FGME",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## SP
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+SP.aov <- aov(SP ~ Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(SP.aov) 
+```
+
+No interaction between entry and maltster; entry and rep 
+
+Maltster, entry and rep have an effect on Barley protein.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-SP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(SP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = SP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(SP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(SP.aov, which = "Maltster")
+SP.HSD.maltster <- HSD.test(SP.aov, "Maltster", alpha = 0.05, group = TRUE)
+SP.HSD.maltster$means
+plot(SP.HSD.maltster, main = 'SP - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+SP.LSD.maltster <- LSD.test(SP.aov, "Maltster")
+SP.LSD.maltster
+
+SP.LSD.maltster <- LSD.test(SP.aov, "Maltster", p.adj = "bonferroni")
+SP.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(SP.aov, which = "Entry")
+SP.HSD.Entry <- HSD.test(SP.aov, "Entry", alpha = 0.05, group = TRUE)
+SP.HSD.Entry$means
+plot(SP.HSD.Entry, main = 'SP - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+SP.LSD.Entry <- LSD.test(SP.aov, "Entry")
+SP.LSD.Entry
+
+SP.LSD.Entry <- LSD.test(SP.aov, "Entry", p.adj = "bonferroni")
+SP.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(SP.aov, which = "Rep") 
+SP.HSD.Rep <- HSD.test(SP.aov, "Rep", alpha = 0.05, group = TRUE)
+SP.HSD.Rep$means
+plot(SP.HSD.Rep, main = 'SP - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+SP.LSD.Rep <- LSD.test(SP.aov, "Rep")
+SP.LSD.Rep
+
+SP.LSD.Rep <- LSD.test(SP.aov, "Rep", p.adj = "bonferroni")
+SP.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$SP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="SP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## KI
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+KI.aov <- aov(KI ~  Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(KI.aov) 
+```
+
+No interaction between entry and maltster; entry and rep
+
+Maltster, entry and rep have an effect.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-KI.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(KI.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = KI.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(KI.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(KI.aov, which = "Maltster")
+KI.HSD.maltster <- HSD.test(KI.aov, "Maltster", alpha = 0.05, group = TRUE)
+KI.HSD.maltster$means
+plot(KI.HSD.maltster, main = 'KI - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+KI.LSD.maltster <- LSD.test(KI.aov, "Maltster")
+KI.LSD.maltster
+
+KI.LSD.maltster <- LSD.test(KI.aov, "Maltster", p.adj = "bonferroni")
+KI.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(KI.aov, which = "Entry")
+KI.HSD.Entry <- HSD.test(KI.aov, "Entry", alpha = 0.05, group = TRUE)
+KI.HSD.Entry$means
+plot(KI.HSD.Entry, main = 'KI - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+KI.LSD.Entry <- LSD.test(KI.aov, "Entry")
+KI.LSD.Entry
+
+KI.LSD.Entry <- LSD.test(KI.aov, "Entry", p.adj = "bonferroni")
+KI.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(KI.aov, which = "Rep") 
+KI.HSD.Rep <- HSD.test(KI.aov, "Rep", alpha = 0.05, group = TRUE)
+KI.HSD.Rep$means
+plot(KI.HSD.Rep, main = 'KI - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+KI.LSD.Rep <- LSD.test(KI.aov, "Rep")
+KI.LSD.Rep
+
+KI.LSD.Rep <- LSD.test(KI.aov, "Rep", p.adj = "bonferroni")
+KI.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$KI, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="KI",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## bG
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+bG.aov <- aov(bG ~ Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(bG.aov) 
+```
+
+Interaction between entry and maltster. 
+
+No interaction between entry and rep. 
+
+Entry and Rep have an effect on Barley protein.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-bG.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(bG.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = bG.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(bG.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(bG.aov, which = "Maltster")
+bG.HSD.maltster <- HSD.test(bG.aov, "Maltster", alpha = 0.05, group = TRUE)
+bG.HSD.maltster$means
+plot(bG.HSD.maltster, main = 'bG - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+bG.LSD.maltster <- LSD.test(bG.aov, "Maltster")
+bG.LSD.maltster
+
+bG.LSD.maltster <- LSD.test(bG.aov, "Maltster", p.adj = "bonferroni")
+bG.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(bG.aov, which = "Entry")
+bG.HSD.Entry <- HSD.test(bG.aov, "Entry", alpha = 0.05, group = TRUE)
+bG.HSD.Entry$means
+plot(bG.HSD.Entry, main = 'bG - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+bG.LSD.Entry <- LSD.test(bG.aov, "Entry")
+bG.LSD.Entry
+
+bG.LSD.Entry <- LSD.test(bG.aov, "Entry", p.adj = "bonferroni")
+bG.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(bG.aov, which = "Rep") 
+bG.HSD.Rep <- HSD.test(bG.aov, "Rep", alpha = 0.05, group = TRUE)
+bG.HSD.Rep$means
+plot(bG.HSD.Rep, main = 'bG - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+bG.LSD.Rep <- LSD.test(bG.aov, "Rep")
+bG.LSD.Rep
+
+bG.LSD.Rep <- LSD.test(bG.aov, "Rep", p.adj = "bonferroni")
+bG.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$bG, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="bG",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## DP
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+DP.aov <- aov(DP ~  Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(DP.aov) 
+```
+
+No interaction between entry and maltster. 
+
+Sig. effect entry and rep
+
+Maltster, entry and rep have an effect.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-DP.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(DP.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = DP.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(DP.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(DP.aov, which = "Maltster")
+DP.HSD.maltster <- HSD.test(DP.aov, "Maltster", alpha = 0.05, group = TRUE)
+DP.HSD.maltster$means
+plot(DP.HSD.maltster, main = 'DP - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+DP.LSD.maltster <- LSD.test(DP.aov, "Maltster")
+DP.LSD.maltster
+
+DP.LSD.maltster <- LSD.test(DP.aov, "Maltster", p.adj = "bonferroni")
+DP.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(DP.aov, which = "Entry")
+DP.HSD.Entry <- HSD.test(DP.aov, "Entry", alpha = 0.05, group = TRUE)
+DP.HSD.Entry$means
+plot(DP.HSD.Entry, main = 'DP - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+DP.LSD.Entry <- LSD.test(DP.aov, "Entry")
+DP.LSD.Entry
+
+DP.LSD.Entry <- LSD.test(DP.aov, "Entry", p.adj = "bonferroni")
+DP.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(DP.aov, which = "Rep") 
+DP.HSD.Rep <- HSD.test(DP.aov, "Rep", alpha = 0.05, group = TRUE)
+DP.HSD.Rep$means
+plot(DP.HSD.Rep, main = 'DP - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+DP.LSD.Rep <- LSD.test(DP.aov, "Rep")
+DP.LSD.Rep
+
+DP.LSD.Rep <- LSD.test(DP.aov, "Rep", p.adj = "bonferroni")
+DP.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$DP, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="DP",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## aA
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+aA.aov <- aov(aA ~  Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(aA.aov) 
+```
+
+Interaction between entry and maltster. 
+
+No interaction between entry and rep
+
+Maltster and entry have an effect. 
+
+Entry and Rep have an effect on Barley protein.
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-aA.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(aA.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = aA.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(aA.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(aA.aov, which = "Maltster")
+aA.HSD.maltster <- HSD.test(aA.aov, "Maltster", alpha = 0.05, group = TRUE)
+aA.HSD.maltster$means
+plot(aA.HSD.maltster, main = 'aA - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+aA.LSD.maltster <- LSD.test(aA.aov, "Maltster")
+aA.LSD.maltster
+
+aA.LSD.maltster <- LSD.test(aA.aov, "Maltster", p.adj = "bonferroni")
+aA.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(aA.aov, which = "Entry")
+aA.HSD.Entry <- HSD.test(aA.aov, "Entry", alpha = 0.05, group = TRUE)
+aA.HSD.Entry$means
+plot(aA.HSD.Entry, main = 'aA - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+aA.LSD.Entry <- LSD.test(aA.aov, "Entry")
+aA.LSD.Entry
+
+aA.LSD.Entry <- LSD.test(aA.aov, "Entry", p.adj = "bonferroni")
+aA.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(aA.aov, which = "Rep") 
+aA.HSD.Rep <- HSD.test(aA.aov, "Rep", alpha = 0.05, group = TRUE)
+aA.HSD.Rep$means
+plot(aA.HSD.Rep, main = 'aA - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+aA.LSD.Rep <- LSD.test(aA.aov, "Rep")
+aA.LSD.Rep
+
+aA.LSD.Rep <- LSD.test(aA.aov, "Rep", p.adj = "bonferroni")
+aA.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$aA, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="aA",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+## FAN
+### Two-Way ANOVA
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE, eval=TRUE}
+
+FAN.aov <- aov(FAN ~  Maltster * Entry + Rep, data = MH.Comp, na.action=na.exclude)
+summary(FAN.aov) 
+```
+
+No interaction between entry and maltster. 
+
+Maltster and entry have an effect. 
+
+### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-FAN.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(FAN.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = FAN.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(FAN.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Maltster)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(FAN.aov, which = "Maltster")
+FAN.HSD.maltster <- HSD.test(FAN.aov, "Maltster", alpha = 0.05, group = TRUE)
+FAN.HSD.maltster$means
+plot(FAN.HSD.maltster, main = 'FAN - Maltster')
+```
+
+### Fisher LSD (Maltster)
+```{r, message=F,warning=F}
+FAN.LSD.maltster <- LSD.test(FAN.aov, "Maltster")
+FAN.LSD.maltster
+
+FAN.LSD.maltster <- LSD.test(FAN.aov, "Maltster", p.adj = "bonferroni")
+FAN.LSD.maltster
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(FAN.aov, which = "Entry")
+FAN.HSD.Entry <- HSD.test(FAN.aov, "Entry", alpha = 0.05, group = TRUE)
+FAN.HSD.Entry$means
+plot(FAN.HSD.Entry, main = 'FAN - Entry')
+```
+
+### Fisher LSD (Entry)
+```{r, message=F,warning=F}
+FAN.LSD.Entry <- LSD.test(FAN.aov, "Entry")
+FAN.LSD.Entry
+
+FAN.LSD.Entry <- LSD.test(FAN.aov, "Entry", p.adj = "bonferroni")
+FAN.LSD.Entry
+```
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(FAN.aov, which = "Rep") 
+FAN.HSD.Rep <- HSD.test(FAN.aov, "Rep", alpha = 0.05, group = TRUE)
+FAN.HSD.Rep$means
+plot(FAN.HSD.Rep, main = 'FAN - Rep')
+```
+
+### Fisher LSD (Rep)
+```{r, message=F,warning=F}
+FAN.LSD.Rep <- LSD.test(FAN.aov, "Rep")
+FAN.LSD.Rep
+
+FAN.LSD.Rep <- LSD.test(FAN.aov, "Rep", p.adj = "bonferroni")
+FAN.LSD.Rep
+```
+
+### Interaction Plot
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = MH.Comp$Maltster, trace.factor = MH.Comp$Entry, 
+                 response = MH.Comp$FAN, fun = mean, trace.label = "Entry",
+                 type = "b", legend = TRUE, 
+                 xlab = "Maltster", ylab="FAN",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+# CCRU Malt Quality
+```{r, warning=F, message=F}
+CCRU = read.csv("2018_CCRU_repped_cleaned.csv", header = T)
+str(CCRU)
+
+CCRU$Rep <- as.factor(CCRU$Rep)
+```
+
+## ANOVA
+### Barley Protein
+```{r, warning = F, message = F}
+CCRU.Barley_Protein.aov <- aov(Barley_Protein ~ Genotype + Rep, data = CCRU, na.action=na.exclude)
+summary(CCRU.Barley_Protein.aov)
+```
+#### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-CCRU.Barley_Protein.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(CCRU.Barley_Protein.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = CCRU.Barley_Protein.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(CCRU.Barley_Protein.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(CCRU.Barley_Protein.aov, which = "Genotype")
+CCRU.Barley_Protein.HSD.Genotype <- HSD.test(CCRU.Barley_Protein.aov, "Genotype", alpha = 0.05, group = TRUE)
+plot(CCRU.Barley_Protein.HSD.Genotype, main = 'Barley_Protein - Genotype')
+```
+
+No separation of genotypes based on barley_protein (BP).
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(CCRU.Barley_Protein.aov, which = "Rep") 
+Barley_Protein.HSD.Maltster <- HSD.test(CCRU.Barley_Protein.aov, "Rep", alpha = 0.05, group = TRUE)
+plot(Barley_Protein.HSD.Maltster, main = 'BP - Maltster')
+```
+
+Rep 2 sig diff from Rep 1 and Rep 3.
+
+### Interaction Plot
+#### Genotype Trace Rep
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = CCRU$Genotype, trace.factor = CCRU$Rep,
+                 response = CCRU$Barley_Protein, fun = mean, trace.label = "Rep",
+                 type = "b", legend = TRUE, 
+                 xlab = "Genotype", ylab="Barley_Protein",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+#### Rep Trace Genotype
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = CCRU$Rep, trace.factor = CCRU$Genotype,
+                 response = CCRU$Barley_Protein, fun = mean, trace.label = "Genotype",
+                 type = "b", legend = TRUE, 
+                 xlab = "Rep", ylab="Barley_Protein",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+### Barley Protein
+```{r, warning = F, message = F}
+CCRU.Barley_Protein.aov <- aov(Barley_Protein ~ Genotype + Rep, data = CCRU, na.action=na.exclude)
+summary(CCRU.Barley_Protein.aov)
+```
+#### ANOVA QAQC
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+res<-CCRU.Barley_Protein.aov$residuals
+hist(res,main="Histogram of residuals",xlab="Residuals")
+plot(CCRU.Barley_Protein.aov,2) #checking normality visually
+
+aov_residuals <- residuals(object = CCRU.Barley_Protein.aov) #run Shapiro-Wilk test
+shapiro.test(x = aov_residuals ) #normality test
+
+plot(CCRU.Barley_Protein.aov,1) #checking homogeneity of variances - three outliers
+```
+
+### Tukey HSD (Entry)
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+TukeyHSD(CCRU.Barley_Protein.aov, which = "Genotype")
+CCRU.Barley_Protein.HSD.Genotype <- HSD.test(CCRU.Barley_Protein.aov, "Genotype", alpha = 0.05, group = TRUE)
+plot(CCRU.Barley_Protein.HSD.Genotype, main = 'Barley_Protein - Genotype')
+```
+
+No separation of genotypes based on barley_protein (BP).
+
+### Tukey HSD (Rep)
+
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+
+TukeyHSD(CCRU.Barley_Protein.aov, which = "Rep") 
+Barley_Protein.HSD.Maltster <- HSD.test(CCRU.Barley_Protein.aov, "Rep", alpha = 0.05, group = TRUE)
+plot(Barley_Protein.HSD.Maltster, main = 'BP - Maltster')
+```
+
+Rep 2 sig diff from Rep 1 and Rep 3.
+
+### Interaction Plot
+#### Genotype Trace Rep
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = CCRU$Genotype, trace.factor = CCRU$Rep,
+                 response = CCRU$Barley_Protein, fun = mean, trace.label = "Rep",
+                 type = "b", legend = TRUE, 
+                 xlab = "Genotype", ylab="Barley_Protein",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```
+
+#### Rep Trace Genotype
+```{r,warning=FALSE,message=FALSE, echo=FALSE}
+interaction.plot(x.factor = CCRU$Rep, trace.factor = CCRU$Genotype,
+                 response = CCRU$Barley_Protein, fun = mean, trace.label = "Genotype",
+                 type = "b", legend = TRUE, 
+                 xlab = "Rep", ylab="Barley_Protein",
+                 pch=c(1,19), col = c("#00AFBB", "#E7B800"))
+```

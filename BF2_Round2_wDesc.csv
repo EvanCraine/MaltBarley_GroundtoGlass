@@ -1,0 +1,553 @@
+Panelist,Genotype,unique_ID,SampleOrder,Rank,CATA_aroma,CATA_all,Desc,NewDesc,DescCoded
+1,Copeland,1_Copeland,1,1,"Floral,Herbacious","Floral,Herbacious, Body-Density-Light",Aroma is lightly floral. Body is light. Flavor-easy drinking-smooth-aftertaste herbal.,"easy drinking, smooth","floral, light, smooth, herbacious"
+1,117.17,1_117.17,2,2,"Grassy,Woody","Grassy,Woody, Bitter",Aroma is woody. Body is light. Flavor is grassy-finish is slight bite/acidity at end.,,"woody, light, grassy, sour"
+1,120.14,1_120.14,3,3,Herbacious,"Herbacious, Bitter","No particular aroma. ody is light. Flavor starts clean/fresh, ends bitter",clean flavor,"light, bitter"
+1,120.17,1_120.17,4,4,Grassy,"Grassy, Sour",No particular aroma. Body is light. Flavor is grasslike.,low aroma,"light, grassy"
+3,120.17,3_120.17,1,1,"Floral,Grassy","Floral,Grassy, Bitter, Afterfeel-Slippery-High, Irritation-Carbonation-Tingle, Body-Density-Light, Effervescence-BubbleDensity-Compact","Slightly sour, mild hoppiness, strong carbonation",hoppy,"sour, irritation_carbonation_burning"
+3,120.14,3_120.14,2,2,Grassy,"Grassy, Sour, Afterfeel-Astringency-Drying, Irritation-Carbonation-Tingle, Body-Density-Light, Body-Viscosity-Thin","Bland, not much flavor, slightly drying",bland,drying
+3,117.17,3_117.17,3,4,Floral,"Floral, Sour, Afterfeel-Astringency-Low, Irritation-Carbonation-Tingle, Effervescence-BubbleDensity-Dispersed, Body-Density-Light","Sour, not too carbonated",,"sour, irritation_carbonation_tingle"
+3,Copeland,3_Copeland,4,3,Fruity,"Fruity, Fruity-Tropical, Sour, Effervescence-BubbleDensity-Dispersed, Body-Viscosity-Thin, Irritation-Carbonation-Tingle","Medium astringency, slightly sour aftertaste",sour aftertaste,"drying, sour"
+4,117.17,4_117.17,1,2,"Fruity,Cereal","Sour, Cereal, Cereal-Malt, Fruity, Fruity-Citrus",Yeasty with slight citrus,yeasty,"fruity, citrus"
+4,120.17,4_120.17,2,1,Fruity,"Fruity, Fruity-Citrus, Bitter",Light nose with slight fruit finish,low aroma,fruity
+4,Copeland,4_Copeland,3,3,Fruity,"Bitter, Fruity, Fruity-Citrus, Fruity-Citrus-Grapefruit",Well balance malt,balanced,"cereal, malt"
+4,120.14,4_120.14,4,4,Fruity,"Fruity, Fruity-Citrus, Fruity-Citrus-Lime, Fruity-Citrus-Lime-Peel",Malt or grain with a bit of sour,,"cereal, malt, grain, sour"
+5,Copeland,5_Copeland,1,3,"Nutty,Cereal","Nutty, Nutty-Walnut, Cereal, Cereal-Biscuit","Biscuit, with slight hint of a nutty taste. Mild color",,"cereal, biscuit, nutty"
+5,117.17,5_117.17,2,4,"Floral,Woody","Floral,Woody, Woody-Pine","Woody flavor with a floral smell, light in color.",,"woody, floral"
+5,120.14,5_120.14,3,1,"Fruity,SweetAromatic","Fruity, Fruity-Pear, SweetAromatic, SweetAromatic-SugarCane","Sweet aromatic smell, fruity flavor, dark in color",,"sweet aromatic, fruity"
+5,120.17,5_120.17,4,2,Grassy,Grassy,"Floral smell, grassy to herbish taste. Dark in color",,"floral, grassy, herbacious"
+6,120.14,6_120.14,1,1,,Sweet,"Smooth, citrus, light","smooth, light","citrus, light"
+6,Copeland,6_Copeland,2,2,,,"Hoppy, great taste","hoppy, good taste",0
+6,120.17,6_120.17,3,3,Stale,Stale,"Stale, fat",,"stale, waxy, fat"
+6,117.17,6_117.17,4,4,,Bitter,Bitter,,bitter
+7,120.17,7_120.17,1,3,"Woody,Cereal,Vegetal,Dairy","Body-Particulate-Smooth, Vegetal, Vegetal-Cucumber, Woody, Woody-Eucalyptus, Body-Density-Heavy, Cereal, Cereal-Malt","Malty, bitter, subtle cucumber, pilsner?",,"cereal, malt, bitter, vegetal, cucumber"
+7,120.14,7_120.14,2,2,"Nutty,Burnt,Dairy","Nutty, Body-Particulate-Smooth, Bitter, Vegetal, Vegetal-Corn, Vegetal-Corn-Cooked","Malty, roasted corn, mild bitterness",,"cereal, malt, vegetal, corn, cooked corn, bitter"
+7,117.17,7_117.17,3,4,"Fruity,Nutty,Dairy","Nutty, Nutty-Almond, Dairy, Dairy-Butter, Fruity, Fruity-Citrus, Afterfeel-Slippery-High","Soil, heavy in mouth, medium body",,"earthy, soil, heavy, thick"
+7,Copeland,7_Copeland,4,1,"Fruity,SweetAromatic,Herbacious,Earthy","Fruity, Fruity-Tropical, Fruity-Tropical-Banana, Herbacious, Herbacious-Rosemary, SweetAromatic, SweetAromatic-Toffee, Earthy, Earthy-Mushroom","I like this on ethe best. Brighter flavor, lemon rind, mild bitterness",favorite,"fruity, citrus, lemon, lemon peel, bitter"
+8,117.17,8_117.17,1,2,"Earthy,Meaty","Earthy, Meaty",The flavor is good but a little heavy for me,"good flavor, heavy",heavy
+8,120.17,8_120.17,2,4,Cereal,Cereal,"Definitely a heavy, strong brew.","heavy, strong",heavy
+8,Copeland,8_Copeland,3,1,SweetAromatic,SweetAromatic,A good light taste,good taste,light
+8,120.14,8_120.14,4,3,Metallic,Metallic,Too light,light,light
+9,Copeland,9_Copeland,1,1,,"Woody, Grassy","Woody, grassy",,"woody, grassy"
+9,117.17,9_117.17,2,4,,"Spicy, Ripe","grass, spicy, ripe",,"grassy, spicy, ripe"
+9,120.14,9_120.14,3,3,,"Bitter, Fruity, Fruity-Citrus, Fruity-Citrus-Grapefruit",Bitter,,bitter
+9,120.17,9_120.17,4,2,,"Spicy, Sweet","Spicy, sweet",,"spicy, sweet"
+10,120.14,10_120.14,1,2,Ripe,"Ripe, Ripe-Sweat","Mellow, ripe sweat",,"ripe, sweat"
+10,Copeland,10_Copeland,2,1,Medicinal,"Medicinal, Medicinal-BandAid","Nice body, band aid",nice body,"medicinal, band-aid"
+10,120.17,10_120.17,3,4,Medicinal,"Medicinal, Medicinal-Rubber","Medicinal, rubber",,"medicinal, rubber"
+10,117.17,10_117.17,4,3,"Herbacious,Stale","Herbacious, Earthy, Earthy-Musty","Herbaceous, musty",,"herbacious, earthy, musty"
+11,120.17,11_120.17,1,2,Cereal,"Cereal, Cereal-Malt","Light, slight to medium maltiness, nice aroma",nice aroma,"light, cereal, malt"
+11,120.14,11_120.14,2,3,Cereal,"Cereal, Cereal-Malt","Light, very slight maltiness, some aroma","light, low aroma","light, cereal, malt"
+11,117.17,11_117.17,3,1,Cereal,"Cereal, Cereal-Malt","Light, very slight maltiness, moderate aroma",light,"light, cereal, malt"
+11,Copeland,11_Copeland,4,4,Cereal,"Cereal, Cereal-Malt","Light, close to #2, richer maltiness, moderate aroma",light,"light, cereal, malt"
+12,117.17,12_117.17,1,2,,,"Mild, almost flavorless, medicinal smell-2nd sniff",bland,medicinal
+12,120.17,12_120.17,2,1,Grassy,Grassy,"Almost no smell, grassy",low aroma,grassy
+12,Copeland,12_Copeland,3,3,Fruity,Fruity,"Tart, fruity",,"tart, fruity"
+12,120.14,12_120.14,4,4,,,ripe,,ripe
+13,Copeland,13_Copeland,1,2,,Sweet,Mouthfeel sweet,,sweet
+13,117.17,13_117.17,2,1,,Bitter,Bitter aroma,,bitter
+13,120.14,13_120.14,3,4,,Body-Particulate-Smooth,Good smooth,smooth,0
+13,120.17,13_120.17,4,3,,Body-Particulate-Smooth,Flavor smooth,smooth,0
+14,120.14,14_120.14,1,1,"Floral,SweetAromatic","Sweet, Floral","Sweet, light, refreshing","light, refreshing","sweet, light"
+14,Copeland,14_Copeland,2,3,Grassy,Grassy,Tastes a bit like Oly,tastes like a macro brand,0
+14,120.17,14_120.17,3,4,Grassy,Grassy,"Very light, almost watery","light, watery",light
+14,117.17,14_117.17,4,2,Earthy,Earthy,Sharp tangy smell-in a nice way,sharp; nice,0
+15,120.17,15_120.17,1,4,,,illegible,,0
+15,120.14,15_120.14,2,2,,,little more body than 161,,0
+15,117.17,15_117.17,3,1,,,light/sweet,light,"light, sweet"
+15,Copeland,15_Copeland,4,3,,,Bland,bland,0
+16,117.17,16_117.17,1,3,Grassy,"Bitter, Body-Density-Heavy, Grassy","Cereal, slippery, smooth small bubbles, medium body",smooth,"cereal, slippery, smooth, small bubbles, heavy"
+16,120.17,16_120.17,2,1,Earthy,"Earthy, Body-Particulate-Smooth, Body-Density-Heavy","Cereal, nutty, medium viscosity",,"cereal, nutty, thick"
+16,Copeland,16_Copeland,3,4,Vegetal,"Body-Density-Light, Vegetal","Light, not as bitter",light,light
+16,120.14,16_120.14,4,2,,"Bitter, Effervescence-BubbleSize-Small","Heavier body, malty, thicker viscosity",heavy,"heavy, cereal, malt, thick"
+17,Copeland,17_Copeland,1,4,Ripe,"Bitter, Ripe, Body-Density-Light, Body-Viscosity-Thin",Wheaty/hoppy. Tastes a bit like undergrad college. Very light. Bitter and slightly waxy.,"tastes like a macro brand, light","cereal, grain, light, bitter, waxy"
+17,117.17,17_117.17,2,1,"Fruity,Floral","Fruity, Fruity-Citrus, Floral, Irritation-Cooling, Body-Particulate-Smooth",Woody flavor with a bitter taste. Maybe stone fruit notes,,"woody, bitter, fruity, stone fruit"
+17,120.14,17_120.14,3,2,"Fruity,Metallic,Stale","Stale, Metallic, Fruity, Fruity-StoneFruit",Bitter and slightly flat taste,flat,"bitter, flat"
+17,120.17,17_120.17,4,3,"Floral,Grassy","Grassy, Body-Density-Light",Dry taste with light feel,light,"drying, light"
+18,120.14,18_120.14,1,4,"Cereal,Stale","Cereal, Stale, Body-Density-Light","Light and yeasty, subtle sweetness","light, yeasty","light, sweet"
+18,Copeland,18_Copeland,2,3,Metallic,"Metallic, Body-Density-Light, Effervescence-BubbleDensity-Compact","Light, slight metallic",light,"light, metallic"
+18,120.17,18_120.17,3,1,Fruity,"Fruity, Body-Density-Light, Fruity-Coconut","Mild, fruity...coconut-ish..? melon...?",mild,"fruity, coconut, melon"
+18,117.17,18_117.17,4,2,"Metallic,Dairy,Stale","Metallic, Dairy, Stale, Dairy-Butter","Mild, smooth, kinda buttery","mild, smooth","smooth, dairy, butter"
+19,120.17,19_120.17,1,1,Woody,"Woody, Body-Density-Light","Good nose, pleasant taste, no aftertaste, smooth","nice aroma, good taste, smooth, no aftertaste",smooth
+19,120.14,19_120.14,2,3,Floral,Floral,"Bit of bitter aftertaste, nice aroma","nice aroma, bitter aftertaste",bitter
+19,117.17,19_117.17,3,2,Earthy,"Earthy, Earthy-Mushroom","Earthy, heavy",heavy,"earthy, heavy"
+19,Copeland,19_Copeland,4,4,,"Sour, Afterfeel-Astringency-Drying, Body-Density-Heavy","Heavy taste, sour aftertaste, dry","heavy, sour aftertaste","heavy, sour, drying"
+20,117.17,20_117.17,1,4,,Bitter,Little hoppy and tart,hoppy,sour
+20,120.17,20_120.17,2,1,Fruity,"Sour, Fruity, Fruity-Pear","Mild and smooth, no hoppy taste","mild, smooth",smooth
+20,Copeland,20_Copeland,3,3,,Sour,"Taste the malt and hops, little sharp bite","hoppy, sharp","cereal, malt, sharp"
+20,120.14,20_120.14,4,2,Cereal,"Cereal, Sweet","Mild, smooth","mild, smooth",smooth
+21,Copeland,21_Copeland,1,2,Fruity,"Fruity, Fruity-Pear, Effervescence-BubbleDensity-Dispersed","Fruity, bubbly",,"fruity, bubbly"
+21,117.17,21_117.17,2,4,,Effervescence-BubbleDensity-Compact,"Weak, on the bitter side",bland,bitter
+21,120.14,21_120.14,3,1,Fruity,"Fruity, Body-Particulate-Smooth",Light smooth fine bubbles,"light, smooth","smooth, small bubbles"
+21,120.17,21_120.17,4,3,,Bitter,Don't like the aftertaste,,0
+22,120.14,22_120.14,1,3,,Sweet,"Sweet aroma, salty sweet taste, cooling/slight spice, thin dry",,"sweet, salty, cooling, spicy, thin, drying"
+22,Copeland,22_Copeland,2,1,Woody,Woody,"Little to no aroma, woody (cedar), medium body, left me with somewhat soapy aftertaste, bitter","low aroma, bad aftertaste","woody, cedar, heavy, slipper, bitter"
+22,120.17,22_120.17,3,2,Fruity,Fruity,"Light floral. Fruity with faint citrus, sweet, moderate carbonation, medium body, almost bitter aftertaste",bitter aftertaste,"floral, fruity, citrus, sweet, irritation_carbonation_burning, heavy, bitter"
+22,117.17,22_117.17,4,4,,Earthy,"Earthy, bitter, ripe/mossy",,"earthy, bitter, ripe, moss"
+23,120.17,23_120.17,1,1,"Burnt,Waxy","Burnt, Waxy, Body-Density-Light","Light, sharp, airy, similar to a Bud Light","tastes like a macro brand, light, sharp","light, sharp"
+23,120.14,23_120.14,2,3,"Cereal,Alcoholic","Cereal, Cereal-Malt, Alcoholic, Irritation-Carbonation-Tingle","Sharp, bitter, strong aftertaste","strong aftertaste, sharp","sharp, bitter"
+23,117.17,23_117.17,3,4,"SweetAromatic,Herbacious,Dairy","Dairy, Dairy-Butter, SweetAromatic, SweetAromatic-Caramel, Herbacious, Herbacious-Thyme","Heavy on tongue, bitter, lasting aftertaste-not in a good way.","heavy, bad aftertaste","heavy, bitter"
+23,Copeland,23_Copeland,4,2,"Nutty,Metallic,Stale","Nutty, Metallic, Stale, Stale-Cardboard","Acrid (acid?), light",light,"sour, light"
+24,117.17,24_117.17,1,2,,"Afterfeel-Astringency-Low, Effervescence-BubbleDensity-Dispersed, Body-Viscosity-Thin","Light flavor profile, almost bland","light, bland",light
+24,120.17,24_120.17,2,1,Alcoholic,"Irritation-Alcohol-Warm, Alcoholic, Body-Viscosity-Thin","Little more flavor than 562, finish was just beginning to be sharp",sharp,sharp
+24,Copeland,24_Copeland,3,3,,"Body-Viscosity-Thin, Body-Density-Light, Bitter","Not much going on here, very light","bland, light",light
+24,120.14,24_120.14,4,4,Cereal,"Cereal, Cereal-GreenMalt, Bitter","Least favorite of the group, not bad but not pleasant",least favorite,0
+25,Copeland,25_Copeland,1,1,Fruity,"Fruity, Body-Particulate-Smooth, Afterfeel-Slippery-Low","Great flavor, fruity tones. Smells wonderful, looks light, great aftertaste","good flavor, nice aroma, good aftertaste","fruity, light"
+25,117.17,25_117.17,2,4,Grassy,"Sour, Grassy, Afterfeel-Astringency-Drying","Acidic taste. Smells woody, slightly pungent",,"sour, woody"
+25,120.14,25_120.14,3,3,Woody,"Woody, Effervescence-BubbleDensity-Compact","Earthy, acidic, pils? Nutty smell",,"earthy, sour, nutty"
+25,120.17,25_120.17,4,2,"Earthy,Nutty","Earthy, Nutty, Irritation-Alcohol-Burning",Smell spicy? Weak taste. Coffee too in aftertaste,bland,"spicy, burnt, coffee"
+26,120.14,26_120.14,1,1,,"Floral, Fruity, Fruity-Pear, Waxy, Body-Particulate-Smooth, Body-Density-Heavy, Irritation-Alcohol-Warm","Floral aroma, wax pear taste, medium smooth body, warm",smooth,"floral, fruity, pear, heavy, warm"
+26,Copeland,26_Copeland,2,3,,"Sour, Fruity, Fruity-Citrus, Body-Density-Light, Body-Particulate-Gritty","Weak scent, sour citrus taste, clear, light and gritty taste","low aroma, light","sour, fruity, citrus, light, gritty"
+26,120.17,26_120.17,3,2,,"Fruity, Fruity-Apple, Fruity-Apple-Cider, Irritation-Cooling, Body-Density-Light","Apple taste, warm cider smell, cooling and light",light,"fruity, apple, cider, cooling, light"
+26,117.17,26_117.17,4,4,,"Burnt, Cereal, Cereal-Toast, Irritation-Spicy, Spicy","Burnt toast scent, spicy unpleasant taste",bad taste,"burnt, cereal, toast, spicy"
+27,120.17,27_120.17,1,1,,Cereal,Cereal effervescence,,"cereal, bubbly"
+27,120.14,27_120.14,2,2,,Ripe,Ripe body,,ripe
+27,117.17,27_117.17,3,3,,"Woody, Fruity, Fruity-Citrus",Woody citrus with mellow after feel,good aftertaste,"woody, citrus"
+27,Copeland,27_Copeland,4,4,,"Irritation-Spicy, Spicy, Fruity, Fruity-Berry, Effervescence-BubbleDensity-Compact",Spicy berry with slight effervescence,,"spicy, fruity, berry, bubbly"
+28,117.17,28_117.17,1,4,"Fruity,Spicy","Fruity, Fruity-Apple, Fruity-Apple-GreenApple, Spicy, Bitter","Fruity/green apple, spicy/black pepper, bitter, bland, cooling",bland,"fruity, apple, green apple, spicy, black pepper, bitter, cooling"
+28,120.17,28_120.17,2,3,Spicy,"Spicy, Spicy-BlackPepper, Sweet","Spicy/black pepper, sweet, (wind drifting to me from a nearby hamburger stand)",,"spicy, black pepper, sweet"
+28,Copeland,28_Copeland,3,1,"Earthy,Nutty","Earthy, Nutty, Sweet, Effervescence-BubbleSize-Small","Earthy/nutty, sweet, effervescent-small bubbles",,"earthy, nutty, sweet, small bubbles"
+28,120.14,28_120.14,4,2,"Fruity,Spicy","Fruity, Fruity-Citrus, Spicy, Bitter","Citrus, spicy, bitter",,"fruity, citrus, spicy, bitter"
+29,Copeland,29_Copeland,1,3,Fruity,"Fruity, Body-Density-Light","Smells good, fruity, tastes goo a small crisp ""bite""",nice aroma,fruity
+29,117.17,29_117.17,2,1,SweetAromatic,"SweetAromatic, Body-Density-Light","Light, smooth, nice aroma","light, smooth, nice aroma","light, smooth"
+29,120.14,29_120.14,3,2,,"Sweet, Body-Particulate-Smooth","Darker, good flavor, like a light IPA. Not bitter",good flavor,0
+29,120.17,29_120.17,4,4,,Bitter,"Not bad, probably more ""hoppy""",hoppy,0
+30,120.14,30_120.14,1,2,,Body-Particulate-Smooth,"Creamy, mild",mild,smooth
+30,Copeland,30_Copeland,2,4,,"Body-Viscosity-Thin, Sour","Thin body, tangy, light ale taste",,"thin, sour, light"
+30,120.17,30_120.17,3,3,,"Body-Particulate-Smooth, Cereal","Taste like 827, more aromatic, smooth grainy taste",smooth,"smooth, cereal, grain"
+30,117.17,30_117.17,4,1,,Nutty,*illegible* Nutty twist,,nutty
+31,120.17,31_120.17,1,2,,,Plain,bland,0
+31,120.14,31_120.14,2,1,,,Slight hop,hoppy,0
+31,117.17,31_117.17,3,3,,Bitter,Bitter but okay,,bitter
+31,Copeland,31_Copeland,4,4,,,Strong bite,,0
+32,117.17,32_117.17,1,1,Fruity,"Fruity, Fruity-Citrus, Sweet, Afterfeel-Slippery-High, Body-Density-Light","Light, similar to a pale ale, smells like a pale ale, possibly fruity, hard to smell what fruit, light pale yellow, smooth, sweet",,"fruity, smooth, sweet"
+32,120.17,32_120.17,2,2,"Floral,Woody","Floral, Woody, Afterfeel-Slippery-High","Darker than 562, darker yellow, smells like an English Ale, ""deeper flavor"", does not have a fruity smell/feel, bitter, smooth, floral",,"bitter, smooth, floral"
+32,Copeland,32_Copeland,3,3,Waxy,"Body-Particulate-Smooth, Afterfeel-Slippery-High, Waxy, Body-Density-Light","Almost no smell, darker/bright brown in color, smooth, bitter, coats the mouth like mucus-sticky",low aroma,"smooth, bitter, thick"
+32,120.14,32_120.14,4,4,"Nutty,Stale","Bitter, Stale, Afterfeel-Slippery-High, Nutty","Smells similar to 562, pale yellow, light in scent, woody, very bitter, slightly hoppy","low aroma, hoppy","woody, bitter, fruity"
+33,Copeland,33_Copeland,1,1,"Floral,Grassy","Floral, Grassy, Bitter, Body-Particulate-Smooth, Irritation-Cooling, Body-Viscosity-Thin","Light taste, almost no aftertaste, pleasant aroma (not sure what it is)","light, no aftertaste, nice aroma",light
+33,117.17,33_117.17,2,4,Earthy,"Salty, Bitter, Earthy, Irritation-Carbonation-Tingle, Body-Particulate-Smooth","Hoppy at first but almost no aftertaste, could not smell over a nearby food truck","hoppy, no aftertaste",0
+33,120.14,33_120.14,3,2,Floral,"Floral, Bitter, Body-Viscosity-Thin, Body-Particulate-Smooth","Very light taste, would need more to be sure what I could taste",light,0
+33,120.17,33_120.17,4,3,Woody,"Woody, Bitter, Irritation-Alcohol-Warm, Irritation-Carbonation-Tingle, Body-Particulate-Smooth","Hoppy compared to others, still fairly light","hoppy, light",light
+34,120.14,34_120.14,1,2,,"Body-Density-Light, Effervescence-BubbleDensity-Dispersed","Seems like a commercial ""macro"" beer like Rainier, not too distinct, watery","tastes like a macro brand, watery",light
+34,Copeland,34_Copeland,2,3,,"Body-Density-Light, Effervescence-BubbleDensity-Dispersed","Rather bland-light/lager/pilsner type beer, thought not enough *illegible* as a pilsner. Watery","tastes like a macro brand, watery, lager",light
+34,120.17,34_120.17,3,4,,"Body-Density-Light, Effervescence-BubbleDensity-Dispersed","I've had something similar before, something in the sample disagrees with my taste buds, don't really like. Watery",watery,0
+34,117.17,34_117.17,4,1,,"Body-Density-Light, Effervescence-BubbleDensity-Dispersed",Reminds be of a beer I tried on the San Juan Islands. Not too bad. watery. ,watery,light
+35,120.17,35_120.17,1,3,Nutty,Nutty,It tastes very yeasty,yeasty,0
+35,120.14,35_120.14,2,4,"Floral,Nutty","Floral, Nutty","It tastes less like yeast than 161, and it also tastes more like water",watery,light
+35,117.17,35_117.17,3,2,"Fruity,Cereal","Fruity, Cereal",It tastes like it has a orange/lemon or citrus aftertaste,,"fruity, citrus, orange, lemon"
+35,Copeland,35_Copeland,4,1,"Floral,Metallic","Metallic, Floral",It has a taste like 562 and 728 combined,,0
+36,117.17,36_117.17,1,4,,Effervescence-BubbleDensity-Dispersed,"Lemon aftertaste, not much flavor, slightly bitter, little carbonation",bland,"fruity, lemon, bitter, tingle"
+36,120.17,36_120.17,2,3,Fruity,"Sweet, Fruity, Fruity-Citrus, Fruity-Citrus-Lemon","Floral aroma, pleasant earthy flavor, slightly sweet",good flavor,"floral, earthy, sweet"
+36,Copeland,36_Copeland,3,2,,"Afterfeel-Astringency-Drying, Bitter","Sweet aroma, astringent, bitter",,"sweet, drying, bitter"
+36,120.14,36_120.14,4,1,,"Sweet, Body-Particulate-Smooth","Nutty aroma, lightly carbonated, some bitter aftertaste",,"nutty, tingle, bitter"
+37,Copeland,37_Copeland,1,4,Stale,Stale,Not my type,least favorite,0
+37,117.17,37_117.17,2,2,Fruity,Fruity,Okay,,0
+37,120.14,37_120.14,3,3,Earthy,Earthy,Earthy,,earthy
+37,120.17,37_120.17,4,1,Floral,Floral,Okay,,0
+38,120.14,38_120.14,1,2,"Earthy,Waxy","Waxy, Waxy-Fat, Body-Particulate-Smooth, Earthy, Body-Density-Heavy",This tastes like a classic beer that is not bitter and you can drink easily,easy drinking,0
+38,Copeland,38_Copeland,2,1,Nutty,"Bitter, Nutty, Body-Density-Light","This has a mild light and slightly bitter flavor, also easy to drink",easy drinking,"light, bitter"
+38,120.17,38_120.17,3,4,"Waxy,Stale","Waxy, Waxy-Fat, Stale, Body-Density-Heavy, Effervescence-BubbleDensity-Dispersed",This one is not very flavorful and is mild,"bland, mild",0
+38,117.17,38_117.17,4,3,"Grassy,Earthy","Sweet, Grassy, Earthy, Body-Density-Light, Effervescence-BubbleDensity-Compact","This one tastes the sweetest to me, but also is mild and easy to drink","mild, easy drinking",sweet
+39,120.17,39_120.17,1,4,"Earthy,Woody,Ripe,Waxy","Ripe, Waxy, Woody, Earthy, Irritation-Alcohol-Burning","Ripe smell, bitter flavor, waxy aftertaste",,"ripe, bitter, waxy"
+39,120.14,39_120.14,2,3,"Floral,Stale","Stale, Floral, Bitter","Bitter, no smell, bitter aftertaste","bitter aftertaste, low aroma",bitter
+39,117.17,39_117.17,3,1,"Grassy,Alcoholic","Alcoholic, Grassy","No smell, nice calm flavor, slightly thick, bitter aftertaste","low aroma, good flavor, bitter aftertaste","thick, bitter"
+39,Copeland,39_Copeland,4,2,"Fruity,Floral","Sweet, Fruity, Floral, Afterfeel-Astringency-Drying","Ripe smell, slightly sweet, slightly fruity",,"ripe, sweet, fruity"
+40,117.17,40_117.17,1,3,"Floral,Grassy","Floral, Grassy","Kind of bitter, ripe",,"bitter, ripe"
+40,120.17,40_120.17,2,2,Woody,"Woody, Sweet","Very mild, didn't have much flavor but easy to drink","bland, easy drinking, mild",0
+40,Copeland,40_Copeland,3,4,"Woody,Ripe","Ripe, Woody",Kind of ripe,,ripe
+40,120.14,40_120.14,4,1,"Earthy,Meaty","Earthy, Sweet, Meaty","Sweet and earthy, easy to drink",easy drinking,"sweet, earthy"
+41,Copeland,41_Copeland,1,1,"Fruity,Nutty","Nutty, Fruity, Sweet, Body-Density-Light","Nutty aftertaste, fruity initially, entirely delicious. Not much alcohol flavor, went down very smooth","good flavor, easy drinking, smooth","nutty, fruity"
+41,117.17,41_117.17,2,2,Fruity,"Bitter, Fruity",Canned fruit is a very accurate scent descriptor. Taste was fairly bitter with a light mouthfeel,,"light, bitter, fruity, different fruits, canned fruit"
+41,120.14,41_120.14,3,3,,"Body-Density-Light, Bitter, Body-Viscosity-Thin","Very classic ""beer smell"" probably the strongest scent thus far. Bitter taste with little to no aftertaste. Low density, light fizz, easy to drink","no aftertaste, easy drinking","light, tingle, bitter"
+41,120.17,41_120.17,4,4,"Fruity,Stale","Fruity, Stale, Stale-Paper","Fruity initial smell, near citrusy taste, medium density. Pretty boring over all. Not a lot going on.",bland,"fruity, fruity, citrus, heavy"
+42,120.14,42_120.14,1,2,Fruity,"Fruity, Fruity-Citrus, Body-Density-Light","Light, citrus, hint of apple, salty hints in the end, has lots of bubbles, compact",,"light, citrus, fruity, apple, salty, bubbly"
+42,Copeland,42_Copeland,2,1,"Fruity,Grassy","Grassy, Fruity, Fruity-Melon","The smell is grassy, it has some hints of melon, the ending is nutty",,"grassy, fruity, melon, nutty"
+42,120.17,42_120.17,3,4,Burnt,Burnt,"Taste medicinal (bandaids), has a rum taste. Burnt finish",,"medicinal, band-aid, alcoholic, rum, burnt"
+42,117.17,42_117.17,4,3,Fruity,"Fruity, Fruity-Citrus, Fruity-Citrus-Grapefruit, Afterfeel-Slippery-High","Light, sweet aromatic. Taste a bit of grapefruit, slippery after feel, clean in the end",,"light, sweet aromatic, fruity, citrus, grapefruit, slippery"
+43,120.17,43_120.17,1,1,Floral,"Floral, Sweet, Irritation-Cooling","Sweet, floral, cooling",,"sweet, floral, cooling"
+43,120.14,43_120.14,2,3,Earthy,"Earthy, Bitter, Afterfeel-Astringency-Drying","Earthy, bitter, astringency",,"earthy, bitter, drying"
+43,117.17,43_117.17,3,2,Woody,"Woody, Sweet, Afterfeel-Astringency-Drying","Woody, sweet, astringency",,"woody, sweet, drying"
+43,Copeland,43_Copeland,4,4,"Nutty,Alcoholic","Nutty, Bitter, Alcoholic","Nutty, bitter, alcohol",,"nutty, bitter, alcohol_burning"
+44,117.17,44_117.17,1,4,"Solvent,Stale","Solvent, Stale",Standard beer,tastes like a macro brand,0
+44,120.17,44_120.17,2,3,"Woody,Cereal,Stale","Woody, Cereal, Stale",Earthy,,earthy
+44,Copeland,44_Copeland,3,1,Alcoholic,"Alcoholic, Body-Density-Heavy","I like this one, warm and filling",nice,warm
+44,120.14,44_120.14,4,2,Nutty,"Nutty, Body-Density-Heavy","I like this one, copper",nice,metallic
+45,Copeland,45_Copeland,1,4,Stale,"Bitter, Effervescence-BubbleSize-Large, Afterfeel-Astringency-Drying, Stale, Stale-Cardboard",Most like a corporate American beer,tastes like a macro brand,0
+45,117.17,45_117.17,2,3,"Herbacious,Ripe,Waxy","Waxy, Waxy-Tallow, Herbacious, Herbacious-Tea, Ripe, Ripe-Sweat",Slightly bitter,,bitter
+45,120.14,45_120.14,3,1,"Dairy,Waxy","Waxy, Waxy-Fat, Dairy, Dairy-Butter, Afterfeel-Slippery-High, Body-Viscosity-Thick","Fullest flavor, and best mouthfeel and aftertaste",favorite,0
+45,120.17,45_120.17,4,2,"Nutty,Alcoholic,Vegetal","Afterfeel-Slippery-High, Alcoholic, Alcoholic-Rum, Nutty. Nutty-Marzipan, Vegetal, Vegetal-Corn",Good,good flavor,0
+46,120.14,46_120.14,1,1,"Fruity,SweetAromatic","Fruity, Fruity-Pear, Sweet, Irritation-Alcohol-Warm, SweetAromatic, SweetAromatic-SugarCane","This one is slightly malty and hoppy, the flavor is subtle, the smell is very fruity and light and crisp","light, crisp","cereal, malt, fruity, light"
+46,Copeland,46_Copeland,2,3,Grassy,"Grassy, Bitter, Body-Viscosity-Thick",Hoppy but less malt flavor. It's fruity and stays on the palate,,"cereal, malt, fruity"
+46,120.17,46_120.17,3,2,"Fruity,Grassy,Woody,Burnt","Fruity, Fruity-Pear, Bitter, Woody, Grassy, Burnt, Burnt-Coffee",This one is very hoppy and slightly bitter. I don't smell a lot of fruit,hoppy,bitter
+46,117.17,46_117.17,4,4,"Metallic,Waxy","Effervescence-BubbleDensity-Compact, Metallic, Sour, Waxy, Waxy-Oil",Super light and very refreshing. It smells a bit like champagne,"light, refreshing","light, fruity"
+47,120.17,47_120.17,1,4,,,"Easy, mellow, light flavor, on par with bud lite!","easy drinking, mellow, light, tastes like a macro brand",light
+47,120.14,47_120.14,2,2,,Bitter,"Not much difference from 161, little more of a lager flavor",lager,0
+47,117.17,47_117.17,3,1,,,More of a hops smell and flavor. That of a light pale ale,hoppy,0
+47,Copeland,47_Copeland,4,3,Earthy,Earthy,Slightly bitter. Hoppy flavor. Cross between pale ale and pilsner,hoppy,bitter
+48,117.17,48_117.17,1,4,"Earthy,Stale","Earthy, Earthy-Musty, Stale, Body-Viscosity-Thin","Musty, bitter, a bit skunky. Heavy density. Bad aftertaste. This tastes like pot","skunky, bad aftertaste","earthy, musty, bitter, heavy"
+48,120.17,48_120.17,2,1,"Floral,SweetAromatic","SweetAromatic, Floral, Body-Viscosity-Thin","Floral, grain, clean. Very refreshing","clean flavor, refreshing","floral, cereal, grain"
+48,Copeland,48_Copeland,3,2,"SweetAromatic,Earthy","Earthy, Earthy-Musty, SweetAromatic, Body-Viscosity-Thin","Light, musty, biscuit. Pretty good. Has some pot smell but it's a bit sweeter","light, good flavor","light, earthy, musty, cereal, biscuit, sweet"
+48,120.14,48_120.14,4,3,Vegetal,"Vegetal, Bitter, Body-Particulate-Smooth, Body-Viscosity-Thick","Bitter, earthy, similar to 827",,"bitter, earthy"
+49,Copeland,49_Copeland,1,4,Fruity,"Fruity, Fruity-Citrus, Body-Viscosity-Thin, Effervescence-BubbleDensity-Dispersed, Sour","Very light, dry, little flavor beyond slight hoppiness","light, hoppy","light, drying "
+49,117.17,49_117.17,2,3,Cereal,"Cereal, Cereal-Malt, Body-Particulate-Smooth, Effervescence-BubbleSize-Small, Body-Density-Light","Sweeter, maltier, slightly darker (still light)",,"sweet, cereal, malt, light"
+49,120.14,49_120.14,3,1,Woody,"Irritation-Alcohol-Warm, Body-Viscosity-Thick, Woody","Medium, warm, smooth, toasty",smooth,"warm, smooth, cereal, toast"
+49,120.17,49_120.17,4,2,Fruity,"Fruity, Fruity-Pear, Fruity-Apple, Afterfeel-Slippery-High, Body-Particulate-Smooth","Fruity, mellow, light",smooth,"fruity, light"
+50,120.14,50_120.14,1,1,,,"Smooth and light, nice","smooth, light, nice","smooth, light"
+50,Copeland,50_Copeland,2,4,,,"Thin, not overly aromatic",,thin
+50,120.17,50_120.17,3,2,,,"Nice aroma, soft flavor",nice aroma,0
+50,117.17,50_117.17,4,3,Fruity,Fruity ,"Light aroma, mildly bitter",light,"light, bitter"
+51,120.17,51_120.17,1,4,Fruity,"Effervescence-BubbleDensity-Dispersed, Effervescence-BubbleSize-Small, Fruity",Very light--not very flavorful,"light, bland",light
+51,120.14,51_120.14,2,1,Fruity,"Bitter, Fruity, Fruity-Citrus","Flavorful, slightly bitter, refreshing","good flavor, refreshing",bitter
+51,117.17,51_117.17,3,2,,"Bitter, Sour","Flavorful, slightly bitter, refreshing","good flavor, refreshing",bitter
+51,Copeland,51_Copeland,4,3,Fruity,"Bitter, Fruity, Fruity-Pear","Very light, flavorful, refreshing","light, good flavor,refreshing",light
+52,117.17,52_117.17,1,4,Floral,Floral,"Little taste, smells better? Like a blonde",,0
+52,120.17,52_120.17,2,3,Floral,Floral,"Better than 562, like a blonde",,0
+52,Copeland,52_Copeland,3,2,Floral,Floral,"Better than 562 and 161, like a blonde",,0
+52,120.14,52_120.14,4,1,"Floral,Cereal","Floral, Cereal, Cereal-Malt","More of an amber color, best tasting",favorite,0
+53,Copeland,53_Copeland,1,2,SweetAromatic,"SweetAromatic, SweetAromatic-Honey","Crisp, very clear, clean, golden light, honey","crisp, clean flavor","light, sweet aromatic, honey"
+53,117.17,53_117.17,2,3,Cereal,"Cereal, Cereal-Bread, Cereal-Grain, Cereal-Malt","Light, slightly more malty than 827, slightly bitter",light,"light, cereal, malt, bitter"
+53,120.14,53_120.14,3,1,"SweetAromatic,Cereal","SweetAromatic, SweetAromatic-Honey, Cereal, Cereal-Malt, Body-Particulate-Smooth","Golden? smooth, sweet, smooth",smooth,"smooth, sweet"
+53,120.17,53_120.17,4,4,Grassy,"Grassy, Grassy-FreshCutGrass","Clear, slightly bitter, dry",,"bitter, drying"
+54,120.14,54_120.14,1,1,,"Fruity, Vegetal, Vegetal-Corn, Cereal, Cereal-Malt, SweetAromatic, SweetAromatic-Honey","So good! Fruity aroma, very reminiscent of a pilsner, very flavorful, golden, crispy, sweet and corny malt finish, honey notes","favorite, good flavor","sweet aromatic, honey, vegetal, corn, cereal, malt, fruity"
+54,Copeland,54_Copeland,2,2,,"Fruity, Spicy, Spicy-Clove, Herbacious, Body-Density-Light, Body-Viscosity-Thin","More fruity, clove smell, slightly herbal, more diluted, less mouthfeel, very wet",,"fruity, spicy, clove, herbacious"
+54,120.17,54_120.17,3,3,,"Sour, Sweet, Medicinal, Medicinal-BandAid","Low to no aroma. Sour initially with sweet finish, bandaid flavor with quick dissociation of flavor","low aroma, no aftertaste","sour, sweet, medicinal, band-aid"
+54,117.17,54_117.17,4,4,,"Cereal, cereal-malt","Neutral, slightly malty, smell, chemical taste, bland to no flavor",bland,"cereal, malt, solvent"
+55,120.17,55_120.17,1,2,Earthy,"Effervescence-BubbleSize-Small, Body-Viscosity-Thin, Earthy","Light, very drinkable","light, easy drinking",light
+55,120.14,55_120.14,2,3,Woody,"Woody, Afterfeel-Astringency-Drying, Bitter","Medium density, dry aftertaste",,"heavy, drying"
+55,117.17,55_117.17,3,1,Fruity,"Fruity, Fruity-Pear, Body-Density-Light, Sweet","Sweet smelling, semisweet at first but dry aftertaste",,"sweet, drying, bitter"
+55,Copeland,55_Copeland,4,4,Earthy,"Bitter, Afterfeel-Astringency-Drying, Body-Density-Heavy, Earthy","Bitter smelling, bitter and tart, clean aftertaste",,"bitter, sour"
+56,117.17,56_117.17,1,4,"Earthy,Dairy","Dairy, Bitter, Earthy","Tastes like a blonde, not my first choice",least favorite,0
+56,120.17,56_120.17,2,2,"Fruity,Floral","Floral, Fruity, Fruity-Citrus",Enjoy more than 562. Maybe a lager,lager,0
+56,Copeland,56_Copeland,3,3,"Burnt,Metallic","Burnt, Metallic","Very similar to 562. Possibly a blonde, dislike this one",least favorite,0
+56,120.14,56_120.14,4,1,"Fruity,Medicinal","Fruity, Fruity-Citrus, Medicinal",Tastes more like an ale. Most enjoyable. More hoppy flavor. Best for sure.,"favorite, hoppy",0
+57,Copeland,57_Copeland,1,2,"Earthy,Woody,Metallic","Earthy, Woody, Metallic, Body-Particulate-Smooth","Tastes like a typical light beer with more flavor, don't know if flavor is hoppiness",tastes like a macro brand; good flavor; hoppy,light
+57,117.17,57_117.17,2,1,"SweetAromatic,Grassy,Cereal","SweetAromatic, Cereal, Grassy","Light, grainy, that smells sweet, very good","light, good flavor","light, cereal, grain, sweet"
+57,120.14,57_120.14,3,4,"Alcoholic,Solvent,Stale","Alcoholic, Solvent, Stale, Body-Density-Heavy","Not much taste but it tastes like it is stronger than most ""light"" beers","tastes like a macro brand, bland",0
+57,120.17,57_120.17,4,3,"Earthy,Stale","Earthy, Stale, Body-Particulate-Smooth, Effervescence-BubbleDensity-Compact","Needs a little more flavor, seems a little too light in flavor, definitely refreshing","light, bland, refreshing",light
+58,120.14,58_120.14,1,4,"Earthy,Nutty,Vegetal,Stale","Earthy, Nutty, Vegetal, Stale",Tastes like Rainier. Not as crisp or fresh as micro,tastes like a macro brand,0
+58,Copeland,58_Copeland,2,1,"SweetAromatic,Herbacious,Grassy","SweetAromatic, Herbacious, Grassy",Much smoother than 728. Not much scent when sniffed. Taste is good,"smooth, low aroma, good taste",smooth
+58,120.17,58_120.17,3,2,"Fruity,Earthy,Woody,Nutty","Fruity, Earthy, Woody, Nutty",More bitter than 728 or 827. But not overwhelming,,bitter
+58,117.17,58_117.17,4,3,"Floral,Herbacious,Nutty","Floral, Herbacious, Earthy, Nutty","Similar to 728, but not as aromatic",low aroma,0
+59,120.17,59_120.17,1,4,Stale,"Stale, Bitter","Light, standard beer flavor","tastes like a macro brand, light",light
+59,120.14,59_120.14,2,3,Fruity,"Fruity, Fruity-Pear, Afterfeel-Astringency-Drying, Bitter","Slight after flavor of bitter or happiness, light fruit tones",bitter aftertaste,"bitter, fruity"
+59,117.17,59_117.17,3,2,"Fruity,SweetAromatic","Fruity, Fruity-Melon, SweetAromatic, SweetAromatic-Caramel, Effervescence-BubbleSize-Large",Very fizzy bit sour,,"bubbly, sour"
+59,Copeland,59_Copeland,4,1,Fruity,"Fruity, Fruity-Tropical, Fruity-Tropical-Pineapple, Body-Particulate-Smooth","Smooth, very light berry flavor aftertaste",smooth,"smooth, fruity, berry"
+60,117.17,60_117.17,1,3,"Spicy,Grassy,Waxy","Grassy, Waxy, Spicy, Spicy-BlackPepper",Slightly grassy and waxy. Not very strong body. Doesn't last long on the palate,no aftertaste,"grassy, waxy"
+60,120.17,60_120.17,2,2,"Woody,Solvent","Woody, Nutty",Wonderful woody smell. Slightly nutty taste. Lingers a little on the palate,nice aroma,"woody, nutty"
+60,Copeland,60_Copeland,3,1,"Floral,Solvent",Floral,Slightly floral tasting. A little sweet,,"floral, sweet"
+60,120.14,60_120.14,4,4,"Spicy,Woody,Stale","Woody, Spicy",Heavy woody smell but not when sampling. Bland taste,bland,woody
+61,Copeland,61_Copeland,1,2,Grassy,Grassy,"Fine, strong",strong,0
+61,117.17,61_117.17,2,3,,,Mellower,mellow,0
+61,120.14,61_120.14,3,4,,Effervescence-BubbleDensity-Dispersed,Very light,light,light
+61,120.17,61_120.17,4,1,,,"Nice, classic flavor",good flavor,0
+62,120.14,62_120.14,1,3,Earthy,Earthy,Flavorful,good flavor,0
+62,Copeland,62_Copeland,2,1,Grassy,Grassy,"Too light of a flavor, like budweiser","tastes like a macro brand, bland",light
+62,120.17,62_120.17,3,4,"Earthy,Cereal","Earthy, Cereal",Tastes a bit like an IPA,,0
+62,117.17,62_117.17,4,2,Grassy,Grassy,Tastes like sample 827 but better,,0
+63,120.17,63_120.17,1,3,,"Body-Density-Light, Sweet","Smooth, mellow, sweet, thin","smooth, mellow","smooth, sweet, thin"
+63,120.14,63_120.14,2,1,"Earthy,Nutty","Earthy, Nutty",Bitter effervescent,,"bitter, bubbly"
+63,117.17,63_117.17,3,2,,Afterfeel-Slippery-High,Umami butter,,"umami, dairy, butter"
+63,Copeland,63_Copeland,4,4,SweetAromatic,"SweetAromatic, SweetAromatic-Bubblegum",Light cream,,light
+65,Copeland,65_Copeland,1,4,"Floral,Earthy,Cereal","Earthy, Floral, Bitter, Cereal, Cereal-Malt","Earthy, floral, bitter, herbaceous, malty",,"earthy, floral, bitter, herbacious, cereal, malt"
+65,117.17,65_117.17,2,1,"Cereal,Vegetal","Vegetal, Cereal","Vegetal, cereal, light sweet, malty",,"vegetal, cereal, sweet, malt"
+65,120.14,65_120.14,3,3,"Grassy,Cereal","Cereal, cereal-malt, Grassy","Malty, grassy, cereal, flavorful",good flavor,"cereal, malt, grassy"
+65,120.17,65_120.17,4,2,"SweetAromatic,Earthy","Body-Density-Light, Earthy, SweetAromatic","Light, earthy, sweet",light,"light, earthy, sweet"
+66,120.14,66_120.14,1,1,Floral,"Floral, Afterfeel-Astringency-Low","Floral, slight drying afterfeel, light, complete","light, balanced","floral, drying, light"
+66,Copeland,66_Copeland,2,3,Cereal,Cereal,"cereal, flat tasting",flat,"cereal, flat"
+66,120.17,66_120.17,3,4,Cereal,Cereal,cereal,,cereal
+66,117.17,66_117.17,4,2,Woody,Woody,Woody,,woody
+67,120.17,67_120.17,1,1,Earthy,"Earthy, Earthy-Soil, Sweet","Bitter, warm alcohol feel, smells like barley",,"bitter, warm, cereal, grain"
+67,120.14,67_120.14,2,4,Burnt,"Bitter, Burnt, Burnt-Smoke","Sharp smell, sour, earthy, strong aftertaste","strong aftertaste, sharp","sour, earthy"
+67,117.17,67_117.17,3,2,"Grassy,Woody","Grassy, Woody","Sour smell, bitter, more carbonation",,"sour, bitter, bubbly"
+67,Copeland,67_Copeland,4,3,Woody,"Woody, Bitter","Smells woody, very bitter, strong aftertaste",strong aftertaste,"woody, bitter"
+70,120.14,70_120.14,1,1,,Body-Density-Light,Light,light,light
+70,Copeland,70_Copeland,2,4,,Fruity,Fruity,,fruity
+70,120.17,70_120.17,3,3,,"Fruity, Fruity-Tropical",Tropical,,"fruity, tropical"
+70,117.17,70_117.17,4,2,,,0,,0
+71,120.17,71_120.17,1,2,,,Taste like budweiser,tastes like a macro brand,0
+71,120.14,71_120.14,2,3,Fruity,"Fruity, Fruity-Coconut, Body-Particulate-Smooth","Buttery smooth, coconut aftertaste",,"smooth, fruity, coconut"
+71,117.17,71_117.17,3,4,,Irritation-Carbonation-Tingle,Light but bitter,,"light, bitter"
+71,Copeland,71_Copeland,4,1,Waxy,"Waxy, Waxy-Soap",ripe,,ripe
+72,117.17,72_117.17,1,2,Fruity,"Sweet, Fruity, Fruity-Pear","Crisp, clean, earthy, citrus","crisp, clean flavor","earthy, fruity, citrus"
+72,120.17,72_120.17,2,1,Fruity,"Fruity, Fruity-StoneFruit, Fruity-StoneFruit-Peach","Sour malty, more acid, sharper",sharp,"sour, cereal, malt, sour, sharp"
+72,Copeland,72_Copeland,3,3,Alcoholic,Body-Viscosity-Thick,"Grassy, citrus",,"grassy, fruity, citrus"
+72,120.14,72_120.14,4,4,Fruity,"Fruity, Sweet",Fuller flavor,good flavor,0
+73,Copeland,73_Copeland,1,1,,,"Clean, bright, lager-ish, fresh flavor","clean flavor, lager",0
+73,117.17,73_117.17,2,2,,,"Good, not so fresh tasting",good,0
+73,120.14,73_120.14,3,4,,,"Crisper but still a little nondescript. Easy drinking, indistinct.","crisp, easy drinking, bland",0
+73,120.17,73_120.17,4,3,,,"Similar to 728. Ok, but nothing standing out",bland,0
+74,120.14,74_120.14,1,3,,"Body-Density-Light, Sweet","Hoppy, light bodied pale ale I think","hoppy, light",light
+74,Copeland,74_Copeland,2,4,"Grassy,Earthy","Grassy, Body-Density-Light, Earthy","Lager, tastes like a Rainier beer","tastes like a macro brand, lager",0
+74,120.17,74_120.17,3,1,Earthy,Earthy,"Medium bodied, fresh hop taste",hoppy,heavy
+74,117.17,74_117.17,4,2,"Woody,Burnt","Burnt, Woody",Kind of a darker taste like a double IPA,,0
+75,120.17,75_120.17,1,2,,"Fruity, Bitter, Body-Density-Heavy","Lager like, bitter (low), good body (medium), fruit (nondescript)",lager,"bitter, heavy, fruity"
+75,120.14,75_120.14,2,4,,"Fruity, Fruity-Apple, Fruity-Pear, SweetAromatic, SweetAromatic-Candy, Sweet, Body-Density-Heavy, Body-Particulate-Smooth, Grassy","Apple/pear, candy sweet, medium body, low bitter, smooth, grassy",smooth,"fruity, apple, pear, sweet, heavy, bitter, smooth, grassy"
+75,117.17,75_117.17,3,3,,Spicy,"Spicier, lager like, needs more bitter",lager,spicy
+75,Copeland,75_Copeland,4,1,,"Cereal, Cereal-Malt, Body-Density-Heavy, Spicy, Cereal-GrahamCracker","Malty, umami, good body (medium), little spice *illegible*",,"cereal, malt, umami, heavy, spicy"
+76,117.17,76_117.17,1,2,"Herbacious,Vegetal","Herbacious, Herbacious-Rosemary, Vegetal, Vegetal-Celery, Irritation-Cooling","Light, hoppy, and earthy","light, hoppy","light, earthy"
+76,120.17,76_120.17,2,3,Grassy,"Grassy, Grassy-FreshCutGrass, Body-Viscosity-Thin, Effervescence-BubbleDensity-Compact",Herby and bitter,,"herbacious, bitter"
+76,Copeland,76_Copeland,3,1,"Floral,Grassy","Floral, Floral-Citronella, Floral-Violet, Grassy",Floral and watery,watery,"floral, light"
+76,120.14,76_120.14,4,4,Medicinal,"Medicinal-BurntRubber, Afterfeel-Slippery-High",Medicinal,,medicinal
+77,Copeland,77_Copeland,1,3,"Fruity,Grassy","Fruity, Fruity-Apple, Grassy","Hoppy, grassy",hoppy,grassy
+77,117.17,77_117.17,2,2,"Fruity,Woody","Fruity, Fruity-Apple, Sweet, Woody","Apple, sweet",,"fruity, apple, sweet"
+77,120.14,77_120.14,3,4,"Fruity,Earthy","Fruity, Fruity-Pear, Earthy","Pear, sweet, earthy",,"fruity, pear, sweet, earthy"
+77,120.17,77_120.17,4,1,"Fruity,Floral,SweetAromatic","Fruity, Fruity-Citrus, SweetAromatic","Citrus, flat, small bubbles",flat,"citrus, flat, small bubbles"
+82,Copeland,82_Copeland,1,1,"Earthy,Nutty","Earthy, Body-Particulate-Smooth, Nutty","Earthy scent, smooth and citrusy",smooth,"earthy, smooth, fruity, citrus"
+82,120.17,82_120.17,2,2,Nutty,Fruity,"Fruit Scent, bubbly with slight nutty taste, long lasting after taste",good aftertaste,"fruity, bubbly, nutty"
+82,120.14,82_120.14,3,3,Nutty,"Sweet, Nutty, Body-Particulate-Smooth","Nutty and smooth, low aftertaste, not very flavorful at all very light","no aftertaste, bland, light","nutty, smooth, light"
+82,117.17,82_117.17,4,4,Woody,"Sour, Body-Particulate-Smooth, Woody","Sour smell, smooth, slightly woody flavor",smooth,"sour, smooth, woody"
+83,Copeland,83_Copeland,1,1,,"Bitter, Sweet, Body-Particulate-Smooth, Effervescence-BubbleDensity-Dispersed, Body-Density-Heavy",Proper ale. Well balanced with good flavor,"balanced, good flavor",0
+83,120.14,83_120.14,2,2,,"Salty, Bitter, Effervescence-BubbleSize-Small, Effervescence-BubbleDensity-Compact","Sweet, pilsner? bitter aftertaste",bitter aftertaste,"sweet, bitter"
+83,117.17,83_117.17,3,3,,"Bitter, Body-Viscosity-Thick, Afterfeel-Astringency-Drying","Malty, very light beer. Little hop flavor","light, hoppy","cereal, malt, light"
+83,120.17,83_120.17,4,4,,"Sour, Effervescence-BubbleDensity-Dispersed, Body-Density-Light","Light lagery beer, ""macro beer""","tastes like a macro brand, light, lager",light
+84,117.17,84_117.17,1,3,Floral,Floral,"Smells nice. Has a nice earthy taste, also leaves a nice aftertaste","nice aroma, good aftertaste",earthy
+84,120.17,84_120.17,2,1,Fruity,Fruity,Nice fruity smell. Has a bit of a floral taste. Bit of a strong aftertaste,strong aftertaste,"fruity, floral"
+84,Copeland,84_Copeland,3,2,Cereal,Cereal,"Has a neutral smell. Pretty light taste, light density","low aroma, bland, light",light
+84,120.14,84_120.14,4,4,Earthy,Earthy,"Bit of a grainy taste, strong aftertaste",strong aftertaste,"cereal, grain"
+87,120.17,87_120.17,1,3,,,"Taste good, strong aftertaste, strong smell","good taste, strong aftertaste",0
+87,120.14,87_120.14,2,1,,Bitter,"Taste great, not strong smell, not bad aftertaste, little bitter","good taste, low aroma, good aftertaste",bitter
+87,117.17,87_117.17,3,4,,"Bitter, Grassy","Bitter, not strong smell, aftertaste grassy",low aroma,"bitter, grassy"
+87,Copeland,87_Copeland,4,2,,Grassy,"No smell, not strong aftertaste, grassy","low aroma, no aftertaste",grassy
+89,Copeland,89_Copeland,1,1,"Fruity,Cereal","Fruity, Fruity-StoneFruit, Fruity-Citrus, Cereal, Bitter, Body-Density-Light, effervescence-bubbledensity-compact",Nose has a strong citrus smell along with stone fruit like tangerine. Follow through has a lighter flavor like a wit but tangerine up front. Finishes on a mild hoppiness,hoppy,"fruity, citrus, stone fruit, tangerine"
+89,117.17,89_117.17,2,4,"Cereal,Waxy","Cereal, Cereal-Bread, Waxy, Waxy-Fat, Afterfeel-Slippery-Low, Afterfeel-Astringency-Drying","Almost nothing on the nose. Flavor is a ready lightness akin to a pilsner, blooms into a fuller flavor that coats the roof of the mouth. Does not have a follow through aftertaste. Very crisp with short finish","light, no aftertaste, crisp, tastes like a macro brand",0
+89,120.14,89_120.14,3,3,"Fruity,Grassy","Grassy, Grassy-GreenLeaves, Fruity, Fruity-Melon, Body-Particulate-Smooth, Body-Density-Light, Effervescence-BubbleDensity-Dispersed","Melon like sweetness that coats the tongue, very mild bitterness on the back end. Transitions to a more earthy hoppy flavor",hoppy,"earthy, fruity, melon, bitter"
+89,120.17,89_120.17,4,2,Fruity,"Fruity, Fruity-Tropical, Fruity-Tropical-Pineapple, Afterfeel-Astringency-Drying","Strong tropical nose and flavor, fresh pineapple without being too sweet, full bodied that has a moderate happens that fades quickly, leaving a semi sweet aftertaste",sweet aftertaste,"fruity, tropical, pineapple, sweet"
+90,120.14,90_120.14,1,1,Woody,"Woody, Sweet","Woody, nutty, smooth and light. Very nice feel in the mouth, no spicy, more smooth","smooth, light","woody, nutty, smooth, light, smooth"
+90,Copeland,90_Copeland,2,2,Spicy,"Spicy, Bitter","Spicy floral sharp feeling on tongue, good flavor but do feel the spicy. Very effervescent","good flavor, sharp","floral, spicy, bubbly"
+90,120.17,90_120.17,3,3,Ripe,"Ripe, Sour","Not much aroma or flavor, kinda flat, almost a dirty dishwater smell","low aroma, bland, flat",0
+90,117.17,90_117.17,4,4,Vegetal,"Vegetal, Sour","Ripe malty, no distinct aroma, tasteless, a little bubbly but not much","low aroma, bland","cereal, malt, bubbly"
+93,Copeland,93_Copeland,1,4,,Body-Particulate-Smooth,"Sample smelled and tasted like a domestic light beer. No floral smell or taste. No fruity smell or taste. Some carbonation but not overwhelming. Flavor was very flat. Smooth, no particulate.","tastes like a macro brand, low aroma, bland, flat, smooth","light, smooth"
+93,117.17,93_117.17,2,2,,"Effervescence-BubbleDensity-Compact, Alcoholic","Sample tasted like a light beer with a very light floral taste. Floral smell was not present. Heavy carbonation, slight alcoholic taste",tastes like a macro brand,"floral, bubbly, alcoholic"
+93,120.14,93_120.14,3,3,,"Earthy, Nutty, Effervescence-BubbleDensity-Compact, Effervescence-BubbleSize-Large","Sample had a slight earthy or nutty taste to it. Heavy carbonation, very sharp effervescence",sharp,"earthy, nutty, bubbly, sharp"
+93,120.17,93_120.17,4,1,,"Fruity, effervescence-bubbledensity-dispersed, Sweet, Earthy",Sample had a very light fruity smell. Also was slightly flat with light carbonation. Taste was sweet to begin with and ended more earthy,,"fruity, flat, swet, earthy"
+94,120.14,94_120.14,1,2,"Floral,Earthy","Floral, Earthy","Wheaty, crisp",crisp,"cereal, grain"
+94,Copeland,94_Copeland,2,3,"Grassy,Woody","Grassy, Woody","Lots of hops, darker",hoppy,0
+94,120.17,94_120.17,3,1,Metallic,Metallic,"Cream, less hops",hoppy,"dairy, cream"
+94,117.17,94_117.17,4,4,Burnt,Burnt,Harsh,,0
+95,120.17,95_120.17,1,2,"Fruity,Metallic","Fruity, Metallic, Bitter, Smooth","Taste like a light beer, slightly metallic with a strong smell. Definitely drinkable",tastes like a macro brand; easy drinking,"light, metallic"
+95,120.14,95_120.14,2,3,"Burnt,Stale","Effervescence-BubbleDensity-Dispersed, Stale, Bitter, Burnt","Nice reddish-gold color, nutty finish. A little light on carbonation/bubbles, slightly sweet",,"nutty, flat, sweet"
+95,117.17,95_117.17,3,4,"Floral,Spicy,Herbacious,Earthy","Floral, Herbacious, Earthy, Spicy","Hardly any smell, nice bubbles but not much flavor either. Tastes like a super light beer","low aroma, light, tastes like a macro brand","bubbly, light"
+95,Copeland,95_Copeland,4,1,Fruity,"Sweet, Body-Viscosity-Thick, Sour, Fruity, Fruity-Citrus","Nice light flavor, slightly sweet and tangy, maybe a little spice","good flavor, light","light, sweet, sour, spicy"
+96,117.17,96_117.17,1,3,Stale,"Bitter, Stale",Skunky tasting at first but better aftertaste,"skunky, good aftertaste",0
+96,120.17,96_120.17,2,2,Stale,"Bitter, Stale",Same as 562 but not as bad at beginning,,0
+96,Copeland,96_Copeland,3,1,Floral,Floral,"Bitter but not bad, lighter",light,"bitter, light"
+96,120.14,96_120.14,4,4,Stale,"Bitter, Stale",same as 562,,0
+97,Copeland,97_Copeland,1,1,Floral,Floral,"Floral, tasty, easy",easy drinking,floral
+97,117.17,97_117.17,2,4,Stale,"Stale, Effervescence-BubbleDensity-Dispersed",Light,light,light
+97,120.14,97_120.14,3,3,,,Light,light,light
+97,120.17,97_120.17,4,2,,,Light,light,light
+98,120.14,98_120.14,1,4,Fruity,"Fruity, Fruity-Tropical, Fruity-Tropical-Mango, Salty, Afterfeel-Astringency-Drying, Effervescence-BubbleDensity-Compact, Irritation-Cooling, Body-Density-Light","Biscuit and mango, light mouth feel",light,"cereal, biscuit, fruity, tropical, mango"
+98,Copeland,98_Copeland,2,3,"Spicy,Ripe","Ripe, Ripe-Sweat, Sour, Bitter, Effervescence-BubbleDensity-Compact, Body-Density-Light","Ripe, spicy, bubbly, dry, bitter, green, smooth, light","smooth, light","ripe, spicy, bubbly, drying, bitter, grassy, vegetal, smooth, light"
+98,120.17,98_120.17,3,2,"Floral,Alcoholic","Floral, Floral-Jasmine, Bitter, Body-Particulate-Smooth, Irritation-Alcohol-Burning, effervescence-bubbledensity-dispersed, Afterfeel-Astringency-Low","Floral, jasmine, bitter, smooth, alcohol, thin, flat, drying","smooth, flat","floral, jasmine, bitter, smooth, alcohol_burning, thin, flat, drying"
+98,117.17,98_117.17,4,1,Nutty,"Nutty, Nutty-Almond, Effervescence-BubbleDensity-Dispersed, Afterfeel-Astringency-Low, Afterfeel-Slippery-High, Body-Particulate-Smooth, Body-Density-Heavy, Body-Viscosity-Thick, Sweet","Herbaceous, nutty, fat, low astringency, slippery, smooth, heavy, thick, sweet","smooth, heavy","herbacious, nutty, fat, low astringency, slippery, smooth, heavy, thick, sweet"
+99,120.17,99_120.17,1,2,Cereal,"Cereal, Cereal-Malt, Sweet, Body-Density-Light, Body-Viscosity-Thin","Malty like a domestic beer, but not as sweet",tastes like a macro brand,"cereal, malt"
+99,120.14,99_120.14,2,1,Cereal,"Cereal, Cereal-Bread, Sweet, Body-Density-Light, Body-Viscosity-Thin",Sweeter than 161,,sweet
+99,117.17,99_117.17,3,3,Cereal,"Cereal, Cereal-Malt, Body-Density-Light, Body-Viscosity-Thin","Slightly sweet, refreshing",refreshing,sweet
+99,Copeland,99_Copeland,4,4,Cereal,"Cereal, Cereal-Grain, Body-Density-Light, Body-Viscosity-Thin",Kind of sweet and bitter,,"sweet, bitter"
+100,117.17,100_117.17,1,4,,"Effervescence-BubbleDensity-Compact, Effervescence-BubbleSize-Large","A little bitter, a little sour. Tastes familiar but stronger flavors, after feel astringent, bubbly, high effervescence, a little more sour/bitter than I prefer",bitter aftertaste,"bubbly, drying, bitter, sour"
+100,120.17,100_120.17,2,2,,Effervescence-BubbleDensity-Dispersed,"Low effervescence, mild flavor, slightly fruity, somewhat forgettable",bland,"flat, fruity"
+100,Copeland,100_Copeland,3,1,Fruity,"Fruity, Fruity-Citrus, Effervescence-BubbleSize-Small, Sweet","Great flavor, not too mild, not too much","good flavor, balanced",0
+100,120.14,100_120.14,4,3,Fruity,"Effervescence-BubbleDensity-Dispersed, Irritation-Cooling, Fruity, Fruity-Apple","Apple flavors, low effervescence, smooth, easy to drink, would be a great summer beer","smooth, easy drinking, refreshing","fruity, apple, flat, smooth"
+101,Copeland,101_Copeland,1,4,Medicinal,"Body-Viscosity-Thin, Bitter, Medicinal, Medicinal-BandAid, Afterfeel-Slippery-High","Slightly bitter, a little thin at first, but feels oily on tongue",,"bitter, thin, slippery"
+101,117.17,101_117.17,2,2,Fruity,"Fruity, Body-Density-Light","Fruity, balanced, nice mouth feel all the way through",balanced,fruity
+101,120.14,101_120.14,3,1,Fruity,"Sweet, Fruity","Well balanced and interesting, easy drinking","balanced, easy drinking",0
+101,120.17,101_120.17,4,3,,"Bitter, Sweet, Body-Density-Heavy, Body-Viscosity-Thick","Thick, one dimensional (maybe two)",bland,thick
+102,120.14,102_120.14,1,3,Cereal,"Cereal, Sweet, Irritation-Carbonation-Tingle, Afterfeel-Slippery-High, Body-Particulate-Smooth",Crisp malty start with slight bitter finish,crisp,"cereal, malt, bitter"
+102,Copeland,102_Copeland,2,2,Cereal,"Bitter, Cereal, Body-Particulate-Smooth","Crisp and a bit bitter, but clean finish","crisp, good aftertaste",bitter
+102,120.17,102_120.17,3,1,Cereal,"Sweet, Bitter, Cereal","Very smooth, with a sweet but clean finish","smooth, good aftertaste","smooth, sweet"
+102,117.17,102_117.17,4,4,Metallic,"Metallic, Body-Viscosity-Thin, Afterfeel-Astringency-Drying",Almost slightly sour,,sour
+103,120.17,103_120.17,1,3,,"Effervescence-BubbleDensity-Dispersed, Body-Viscosity-Thin","Mild, light","mild, light",light
+103,120.14,103_120.14,2,2,Woody,"Woody, Bitter","Light, fruity, citrus",light,"light, fruity, citrus"
+103,117.17,103_117.17,3,1,Fruity,"Fruity, Body-Density-Light",Nutty,,nutty
+103,Copeland,103_Copeland,4,4,"Woody,Stale","Stale, Woody","More bitter than the others, slightly floral",,"bitter, floral"
+104,117.17,104_117.17,1,4,,"Body-Density-Light, Sweet, Bitter","Smells light, fruity, sweet. After feel - none, no irritation, dispersed, smooth, light, thin smooth body","low aroma, no aftertaste, smooth, light","smooth, thin, light, flat, low astringency, light, fruity, sweet"
+104,120.17,104_120.17,2,1,"SweetAromatic,Grassy","Body-Density-Light, Effervescence-BubbleSize-Large, SweetAromatic, Grassy, Irritation-Alcohol-Warm","Sharp, light, smooth, smells sweet, compact / small effervescence","light, smooth, sharp","sharp, light, smooth, sweet, small bubbles"
+104,Copeland,104_Copeland,3,2,"SweetAromatic,Herbacious,Metallic,Waxy","SweetAromatic, Herbacious, Metallic, Waxy, Sour, Body-Density-Light","Woody smell, compact, sharp, tingle tiny bit bitter",sharp,"woody, bubbly, sharp, tingle, bitter"
+104,120.14,104_120.14,4,3,Alcoholic,"Bitter, Alcoholic, Irritation-Carbonation-Tingle, Irritation-Alcohol-Warm","Smells sharp/bitter, tastes warm, slight tingle, floral, aftertaste - bitter","bitter aftertaste, sharp","sharp, bitter, warm, tingle, floral, bitter"
+105,Copeland,105_Copeland,1,2,"Floral,Earthy","Floral, Body-Density-Light, Earthy","Salty, bitter",,"salty, bitter"
+105,117.17,105_117.17,2,4,"Floral,Earthy","Floral, Body-Density-Light, Earthy",Grassy,,grassy
+105,120.14,105_120.14,3,1,"Earthy,Woody","Woody, Earthy, Body-Density-Light",Cereal,,cereal
+105,120.17,105_120.17,4,3,,"Afterfeel-Astringency-Drying, Irritation-Cooling, Body-Viscosity-Thin","Milld, earthy",mild,earthy
+106,120.14,106_120.14,1,2,"Grassy,Earthy","Bitter, Earthy, Grassy","Hoppy, smooth, light","hoppy, smooth, light","smooth, light"
+106,Copeland,106_Copeland,2,1,"Fruity,Floral,SweetAromatic","Fruity, Floral, SweetAromatic","Really light, not a lot of flavor","light, bland ",light
+106,120.17,106_120.17,3,3,"Floral,Grassy","Floral, Grassy","Sharper taste, can smell hop or barley more","hoppy, sharp","sharp, cereal, grain"
+106,117.17,106_117.17,4,4,"Earthy,Woody,Nutty,Burnt,Alcoholic","Earthy, Woody, Burnt, Nutty, Alcoholic","Has a more acid taste, still good",good flavor,sour
+107,120.17,107_120.17,1,4,"Grassy,Earthy,Woody,Metallic","Grassy, Earthy, Woody, Metallic, Body-Density-Light, Body-Viscosity-Thin, Effervescence-BubbleDensity-Dispersed, Effervescence-BubbleSize-Small",Miller lite,tastes like a macro brand,light
+107,120.14,107_120.14,2,2,"Grassy,Earthy,Woody,Metallic","Grassy, Earthy, Woody, Metallic, Body-Density-Light, Body-Viscosity-Thin, Effervescence-BubbleDensity-Dispersed, Effervescence-BubbleSize-Small",Keystone light,tastes like a macro brand,light
+107,117.17,107_117.17,3,3,"Grassy,Earthy,Woody,Metallic","Grassy, Earthy, Woody, Metallic, Body-Density-Light, Body-Viscosity-Thin, Effervescence-BubbleDensity-Dispersed, Effervescence-BubbleSize-Small",Bud light,tastes like a macro brand,light
+107,Copeland,107_Copeland,4,1,"Grassy,Earthy,Woody,Metallic","Grassy, Earthy, Woody, Metallic, Body-Density-Light, Body-Viscosity-Thin, Effervescence-BubbleDensity-Dispersed, Effervescence-BubbleSize-Small",Another lite beer,tastes like a macro brand,light
+108,117.17,108_117.17,1,2,"Nutty,Cereal","Nutty, Cereal, Cereal-Bready, Body-Density-Light","Light, wheaty, watery (good though), good hot day beer","light, refreshing, watery","light, cereal, grain"
+108,120.17,108_120.17,2,1,"Nutty,Cereal","Cereal, Cereal-Grain, Irritation-Cooling, Body-Density-Light, Nutty, Nutty-Almond","Tangy, crisp, lager","crisp, lager",sour
+108,Copeland,108_Copeland,3,4,"Cereal,Waxy","Cereal, Cereal-RoastedCereal, Afterfeel-Slippery-High, Waxy, Waxy-Oil","Skunky, little flavor","skunky, bland",0
+108,120.14,108_120.14,4,3,"SweetAromatic,Nutty,Cereal","Cereal, Cereal-Malt, SweetAromatic, SweetAromatic-Caramel, Nutty, Nutty-Walnut","Skunky, very wheaty",skunky,"cereal, grain"
+109,Copeland,109_Copeland,1,2,"Fruity,Floral,Grassy","Grassy, Body-Viscosity-Thin, Floral, Fruity, Fruity-Citrus, Fruity-Citrus-Grapefruit, Grassy, Grassy-Hay","Light skunk, thin very light as a light beer lacks full mouth feel. Water on the tongue","skunky, light, watery, tastes like a macro brand","thin, light"
+109,117.17,109_117.17,2,4,"Grassy,Cereal,Waxy","Waxy, Waxy-Fat, Grassy, Grassy-Hay, Cereal, Cereal-GreenMalt, Effervescence-BubbleSize-Small","Lager esque, decent feel. Tasty but light, no smell, slight spice of a clove","good taste, light, lager","light, spicy, clove"
+109,120.14,109_120.14,3,1,"Fruity,Floral,Herbacious,Grassy","Herbacious, Floral, Grassy, Fruity, Fruity-Citrus",Waxy coating of the mouth. Well rounded body. Tasty like a light amber flavor. Very bubbly,,"low slippery, bubbly"
+109,120.17,109_120.17,4,3,Cereal,"Cereal, Cereal-Malt, Cereal-Toast",Easy drink with good flavor. Nothing special stands out,"easy drinking, good flavor",0
+110,120.14,110_120.14,1,2,Fruity,"Body-Density-Light, Fruity, Fruity-Citrus",More of a soft hop with little flavor to back up. Resembles big corporation and may be good for light beers,tastes like a macro brand,light
+110,Copeland,110_Copeland,2,3,,Body-Density-Light,Almost identical to busch,tastes like a macro brand,light
+110,120.17,110_120.17,3,1,,,The most citrus and hoppy with the most flavor,"hoppy, good flavor, favorite","fruity, citrus"
+110,117.17,110_117.17,4,4,,,Very hoppy but lacking in taste,"hoppy, bland",0
+111,120.17,111_120.17,1,1,,,"Rich, good flavor",good flavor,0
+111,120.14,111_120.14,2,2,,Cereal,"Cereal, blander",bland,cereal
+111,117.17,111_117.17,3,4,,"Ripe, Sour","Ripe, sour, did not care for",least favorite,"ripe, sour"
+111,Copeland,111_Copeland,4,3,,Cereal,"Ok, somewhat bland (cereal?)",bland,cereal
+112,117.17,112_117.17,1,1,"Fruity,Herbacious","Fruity, Fruity-Tropical, Herbacious","Lemony, light floral, a bit bitter",,"fruity, citrus, lemon, bitter"
+112,120.17,112_120.17,2,2,"Grassy,Vegetal","Grassy, Vegetal, Vegetal-Cucumber","Amber, warm, denser than 562, in a good way",heavy,"warm, heavy"
+112,Copeland,112_Copeland,3,4,"Fruity,Spicy","Fruity, Fruity-Citrus, Fruity-Citrus-Grapefruit, Spicy, Spicy-Coriander","Anise almost, light, neutral","light, bland ","spicy, anise, light"
+112,120.14,112_120.14,4,3,"Fruity,Solvent","Fruity, Fruity-Citrus, Solvent, Solvent-Petroleum","Orangey, a bit warm",,"fruity, citrus, orange, warm"
+113,Copeland,113_Copeland,1,4,Waxy,Waxy,"Mild, non-descript","mild, bland",0
+113,117.17,113_117.17,2,2,Floral,"Floral, Floral-Hawthorn","Floral, non-descript",,floral
+113,120.14,113_120.14,3,1,Earthy,"Earthy, Earthy-Truffle","Nice finish, hay smell, taste",good aftertaste,"grassy, hay"
+113,120.17,113_120.17,4,3,Grassy,"Grassy, Grassy-Hay","Flat, but good mouthfell",flat,flat
+114,120.14,114_120.14,1,4,,"Body-Particulate-Smooth, Irritation-Carbonation-Tingle, Body-Viscosity-Thin, Irritation-Alcohol-Warm, Effervescence-BubbleSize-Small","Smooth, a bit hoppy, tingly, thin body. a nondescript light beer","smooth, hoppy, bland, tastes like a macro brand","smooth, tingle, thin"
+114,Copeland,114_Copeland,2,3,Alcoholic,"Body-Particulate-Smooth, Irritation-Alcohol-Warm, Effervescence-BubbleSize-Small, Body-Density-Light","Smooth/mellow, warm alcohol, small bubbles, thin body. A smooth tasting beer, light","smooth, mellow, smooth, light","smooth, warm, small bubbles, thin, light"
+114,120.17,114_120.17,3,1,Alcoholic,"Effervescence-BubbleSize-Small, Afterfeel-Astringency-Drying, Body-Density-Light, Irritation-Cooling","Small bubbles, a bit astringent, light body, cooling, my favorite, mellow yet refreshing","light, favorite, mellow, refreshing","small bubbles, drying, light, cooling"
+114,117.17,114_117.17,4,2,,"Irritation-Alcohol-Warm, Effervescence-BubbleSize-Small, Body-Density-Light, Afterfeel-Astringency-Drying","Small bubbles, a bit warm irritation, thin body, a bit astringent. A bit more body and flavor",,"small bubbles, warm, thin, drying"
+115,120.17,115_120.17,1,1,"Fruity,Floral","Fruity, Fruity-Pear, Floral, Sweet","Smooth, light, maybe pear","smooth, light","smooth, light, fruity, pear"
+115,120.14,115_120.14,2,3,"Ripe,Dairy","Dairy, Ripe, Body-Particulate-Smooth","Creamy, smooth with a little nip",smooth,"dairy, cream, smooth"
+115,117.17,115_117.17,3,4,Nutty,"Nutty, Body-Density-Heavy","Nutty, medium body",,"nutty, heavy"
+115,Copeland,115_Copeland,4,2,Dairy,"Dairy, Dairy-Butter, Body-Particulate-Smooth","Sweet, smooth, nice aftertaste","smooth, good aftertaste","sweet, smooth"
+116,117.17,116_117.17,1,4,"Vegetal,Stale","Vegetal, Vegetal-Corn, Stale, Stale-Cardboard","Corn, astringent finish, light lager flavor. Fairly plain, unremarkable","light, bland, lager","vegetal, corn, drying"
+116,120.17,116_120.17,2,1,"Floral,Vegetal,Stale","Vegetal, Vegetal-Corn, Stale, Stale-Cardboard, Floral, Floral-Rose","Cardboard nose, slicker than 562, less astringent, more corn flavor. Not great but better than 562",,"low astringency, vegetal, corn, cardboard"
+116,Copeland,116_Copeland,3,2,Floral,"Afterfeel-Astringency-Drying, Floral","Slightly floral, little corn and stale aftertaste, more bitter than 562 and 161",,"floral, vegetal, corn, stale"
+116,120.14,116_120.14,4,3,Vegetal,"Sweet, Vegetal, Vegetal-Corn, Afterfeel-Slippery-High","Not much nose, middle of the road. More malt, less corn flavor. Less bitter than 827",low aroma,"cereal, malt, vegetal, corn, bitter"
+117,Copeland,117_Copeland,1,3,Grassy,Grassy,"A bit bitter on first taste, piney taste",,"bitter, woody, pine"
+117,117.17,117_117.17,2,4,Vegetal,Vegetal,"A bit of a bite on the tongue, sour taste",,"sharp, sour"
+117,120.14,117_120.14,3,2,Floral,Floral,"Light on the tongue, nice floral smell","light, nice aroma","light, floral"
+117,120.17,117_120.17,4,1,Floral,"Floral, Floral-Jasmine",Jasmine smell-sweet,,"floral, jasmine, sweet"
+118,120.14,118_120.14,1,1,Grassy,"Sweet, Grassy, Afterfeel-Astringency-Drying",Very light flavor,light,light
+118,Copeland,118_Copeland,2,2,Fruity,"Fruity, Fruity-Apple, Fruity-Apple-SourApple",Wheat flavor,,"cereal, grain"
+118,120.17,118_120.17,3,3,Fruity,"Fruity, Fruity-Citrus, Fruity-Citrus-Lemon, Body-Density-Light",Very light flavor,light,light
+118,117.17,118_117.17,4,4,Fruity,"Fruity, Fruity-Apple, Fruity-Apple-GreenApple, Body-Density-Light",Not very hoppy tasting!,,0
+119,120.17,119_120.17,1,1,"Fruity,Nutty","Fruity, Fruity-Citrus, Fruity-Tropical, Effervescence-BubbleDensity-Compact, Body-Density-Light, Irritation-Carbonation-Tingle, Cereal, cereal-malt","Smell: citrus, sour aroma. Light malt, fruity flavor. Lighter, slightly thin-dispersed.",light,"sour, fruity, citrus, cereal, malt, fruity, light, thin, flat"
+119,120.14,119_120.14,2,3,"Fruity,Medicinal","Fruity, Fruity-Apple, Fruity-Apple-SourApple, Sour, Effervescence-BubbleDensity-Dispersed, Afterfeel-Astringency-Drying, Medicinal","Smell: mild, nondescript. Slightly tropical, dry finish.","mild, low aroma, bland","fruity, tropical, drying"
+119,117.17,119_117.17,3,4,Floral,"Floral, Afterfeel-Astringency-Low, Effervescence-BubbleDensity-Dispersed, Body-Density-Heavy","Smell: sour, sharp. Tastes sour, flat, medium body, cereal-grainy.","flat, sharp","sour, sharp, sour, flat, heavy, cereal, grain"
+119,Copeland,119_Copeland,4,2,"Floral,Cereal","Cereal, Cereal-Malt, Floral, Afterfeel-Astringency-Low, Effervescence-BubbleDensity-Dispersed, Body-Density-Heavy",Smell: malty. Taste: malty grain (umami--might be crackers). Low astringency.,,"cereal, malt, grain, umami, low astringency"
+120,117.17,120_117.17,1,1,Fruity,"Fruity, Fruity-StoneFruit, Fruity-StoneFruit-Apricot","Mild, woody scent, grassy finish",mild,"mild, woody, grassy"
+120,120.17,120_120.17,2,4,Solvent,"Solvent, Solvent-Chemical",Moderately bitter with little to no scent,low aroma,bitter
+120,Copeland,120_Copeland,3,3,"Fruity,Waxy","Fruity, Fruity-Citrus, Fruity-Citrus-Lemon, Fruity-Citrus-Lemon-Peel, Waxy, Waxy-Soap","Lemon peel, soap",,"fruity, citrus, lemon, lemon peel, waxy, soap"
+120,120.14,120_120.14,4,2,"SweetAromatic,Herbacious","SweetAromatic, SweetAromatic-Bubblegum, Herbacious, Herbacious-Oregano",Bubble gum with lightly bitter finish. Oregano,,"sweet aromatic, bubble gum, bitter, herbacious"
+121,Copeland,121_Copeland,1,1,"Grassy,Stale","Sour, Stale, Grassy, Grassy-Hay","Taste like a blonde, very smooth",smooth,smooth
+121,117.17,121_117.17,2,4,Spicy,"Bitter, Afterfeel-Astringency-Drying, Irritation-Spicy-Burning","Hoppy, has an aftertaste",hoppy,0
+121,120.14,121_120.14,3,2,,"Bitter, Body-Density-Light, Irritation-Carbonation-Tingle","Not as hoppy as 562, not as smooth as 827",,0
+121,120.17,121_120.17,4,3,Woody,"Sweet, Body-Particulate-Smooth, Woody, Woody-Pine","Smoothest out of all 4 of them, but did not have a flavor","smooth, bland",smooth
+122,120.14,122_120.14,1,2,"Earthy,Cereal","Earthy, Cereal, cereal-malt","Earthy smell, smooth",smooth,"earthy, smooth"
+122,Copeland,122_Copeland,2,4,"Fruity,Floral,Earthy","Earthy, Floral, Fruity, Fruity-Citrus, Fruity-Citrus-Orange, Fruity-Citrus-Orange-Peel, Bitter","Bland, easy to drink","bland, easy drinking",0
+122,120.17,122_120.17,3,3,Floral,Floral,"Smooth, easy to drink, not hoppy","smooth, easy drinking",smooth
+122,117.17,122_117.17,4,1,Woody,Woody,"Woody, smooth",smooth,"woody, smooth"
+123,120.17,123_120.17,1,1,"Cereal,Vegetal","Cereal, Cereal-Grain, Cereal-Bread, Vegetal, Vegetal-Cucumber, Vegetal-Celery","Yeasty, tart but not citrus, slight taste of lemon. Little mossy. Hint of celery, slight bread, slight astringency, light body","yeasty, light","light, low astringency, cereal, bread, vegetal, celery, earthy, mossy, citrus, lemon, sour"
+123,120.14,123_120.14,2,2,SweetAromatic,"SweetAromatic, SweetAromatic-Honey","Very light nose, Kolsch-y, slightly sweet, turbinado sugar vibe. Smooth palate feel, dry finish, flavor a little thin","low aroma, smooth","thin, drying, smooth, sweet aromatic, sweet, sugar cane"
+123,117.17,123_117.17,3,4,Grassy,"Grassy, Body-Density-Light","Very little nose. Taste like a ""light"" beer. Some nice herb notes, but very light hard to pinpoint. Maybe grass aroma. Bland, no notable mouthfeel","low aroma, tastes like a macro brand, bland","grassy, herbacious, light"
+123,Copeland,123_Copeland,4,3,"Fruity,SweetAromatic","Fruity, Fruity-Citrus, Fruity-Citrus-Lemon, SweetAromatic, SweetAromatic-Caramel, Afterfeel-Astringency-Drying, Body-Density-Light","""german"" nose, pilsner / St. Paul. Like both but with a hint of marzen. Fruity but dry, almost semolina grape profile but with beer body. Slightly sharp on the tongue, with a tinge of sweetness on the finish. Light bodied, finish has slight lemon notes","light, sharp","fruity, citrus, light, sharp, drying"
+124,117.17,124_117.17,1,1,,Afterfeel-Astringency-Drying,"Light, lasting flavor",light,light
+124,120.17,124_120.17,2,3,,Irritation-Carbonation-Tingle,"Heavier, lasting flavor",heavy,heavy
+124,Copeland,124_Copeland,3,2,,"Body-Particulate-Smooth, Effervescence-BubbleDensity-Compact, Body-Viscosity-Thin","Hoppy, medium flavor",hoppy,0
+124,120.14,124_120.14,4,4,,"Effervescence-BubbleSize-Large, Effervescence-BubbleDensity-Compact, Afterfeel-Slippery-High","Light, hoppy lasting flavor","light, hoppy",light
+125,Copeland,125_Copeland,1,4,"SweetAromatic,Ripe","SweetAromatic, Ripe, Body-Particulate-Smooth, Body-Density-Light","Sweet and smooth, earthy hints and not bitter aftertaste",smooth,"sweet, smooth, earthy"
+125,117.17,125_117.17,2,2,Waxy,"Sweet, Dairy, Waxy, Waxy-Fat, Body-Particulate-Smooth, Body-Density-Light","Slightly sour and smooth, no bitter aftertaste, slightly sweet",smooth,"sour, smooth, sweet"
+125,120.14,125_120.14,3,1,Floral,"Sweet, Floral, Body-Density-Light, Body-Particulate-Smooth","Sweet and fruity (slightly), smooth, light","smooth, light","sweet, fruity, smooth, light"
+125,120.17,125_120.17,4,3,Fruity,"Body-Density-Heavy, Body-Particulate-Smooth, Sour, Fruity, Fruity-Citrus, Salty","Bitter and sweet, slightly sour with a slight tangy citrus taste",,"bitter, sweet, sour, fruity, citrus"
+126,120.14,126_120.14,1,3,"Herbacious,Burnt","Burnt, Burnt-Coffee, Burnt-Smoke, Herbacious","Bitter, smoky",,"bitter, burnt, smoke"
+126,Copeland,126_Copeland,2,4,"Fruity,Cereal,Burnt","Cereal, Cereal-Malt, Burnt, Burnt-Coffee, Fruity","Tangy, bitter",,"sour, bitter"
+126,120.17,126_120.17,3,2,"Burnt,Dairy","Dairy, Dairy-Cream, Burnt, Burnt-Coffee, Effervescence-BubbleDensity-Compact","Fruity smell, smoothish",smooth,"fruity, smooth"
+126,117.17,126_117.17,4,1,"Grassy,Dairy","Grassy, Grassy-GreenLeaves, Dairy, Dairy-Milk, Effervescence-BubbleDensity-Compact","Mild, slightly bitter finish",mild,"mild, bitter"
+127,120.17,127_120.17,1,1,,"Sweet, Spicy, Afterfeel-Slippery-High, Effervescence-BubbleSize-Small","Sweet, spicy, slippery, small bubbles",,"sweet, spicy, slippery, small bubbles"
+127,120.14,127_120.14,2,3,,"Salty, Afterfeel-Slippery-Low, Effervescence-BubbleSize-Small","Salty, stale, spicy, small bubbles",,"salty, stale, spicy, small bubbles"
+127,117.17,127_117.17,3,4,,"Salty, Stale, Spicy, Effervescence-BubbleSize-Small","Sour, stale, astringent, no bubbles",flat,"sour, stale, drying, flat"
+127,Copeland,127_Copeland,4,2,,"Sour, Stale, Afterfeel-Astringency-Drying, Effervescence-BubbleDensity-Dispersed","Salty, nothing, slippery, small bubbles",bland,"salty, slippery, small bubbles"
+128,117.17,128_117.17,1,2,Herbacious,Herbacious,Little hoppy,hoppy,0
+128,120.17,128_120.17,2,1,Earthy,Earthy,Nice light beer,"nice, light",light
+128,Copeland,128_Copeland,3,3,Fruity,"Fruity, Fruity-Citrus",More citrusy aftertaste,,"fruity, citrus"
+128,120.14,128_120.14,4,4,Woody,Woody,"Taste similar to 827, a bit hoppy",hoppy,0
+129,Copeland,129_Copeland,1,2,,Salty,"Light, good flavor","light, good flavor",light
+129,117.17,129_117.17,2,4,Earthy,"Salty, Earthy",Not a whole lot of taste (bland),bland,0
+129,120.14,129_120.14,3,3,Grassy,"Bitter, Grassy",Stale taste,,stale
+129,120.17,129_120.17,4,1,Fruity,"Bitter, Fruity",Taste good,good taste,0
+130,120.14,130_120.14,1,1,,,"Lager, soft, standard","tastes like a macro brand, lager",0
+130,Copeland,130_Copeland,2,2,,,"Clearer, open, light",light,light
+130,120.17,130_120.17,3,3,Fruity,Fruity,"Fruitier mouthfeel, minimal scent",low aroma,fruity
+130,117.17,130_117.17,4,4,,,"Thin, lacking any notable scent","thin, low aroma",thin
+131,120.17,131_120.17,1,1,"Floral,SweetAromatic","Floral, SweetAromatic","Sweet, bitter but light not overpowering",light,"sweet, bitter, light"
+131,120.14,131_120.14,2,2,"Herbacious,Grassy,Woody","Woody, Grassy, Herbacious","Light crisp like a water beer or a lager, not sharp","light, crisp, watery, tastes like a macro brand, lager",light
+131,117.17,131_117.17,3,4,"Woody,Cereal,Stale","Cereal, Woody, Stale","Sour, earthy, not quite hoppy but close, stronger than I like",strong,"sour, earthy"
+131,Copeland,131_Copeland,4,3,"Floral,Stale","Sour, Bitter, Floral, Stale","Stronger, more powerful bitter, stays on the tongue","strong, bitter aftertaste",bitter
+132,117.17,132_117.17,1,3,Nutty,"Body-Density-Light, Nutty, Body-Particulate-Smooth","Refreshing, light","refreshing, light",light
+132,120.17,132_120.17,2,4,Fruity,"Body-Density-Light, Body-Viscosity-Thin, Fruity, Afterfeel-Slippery-Low","Light, more flavor",light,light
+132,Copeland,132_Copeland,3,2,Medicinal,"Body-Density-Light, Body-Viscosity-Thin, Effervescence-BubbleDensity-Compact, Medicinal, Bitter","hops, light, refreshing","hoppy, light, refreshing",light
+132,120.14,132_120.14,4,1,"Floral,Nutty","Body-Density-Light, Body-Viscosity-Thin, Floral, Nutty","refreshing, light","refreshing, light",light
+133,Copeland,133_Copeland,1,4,Woody,"Body-Density-Light, Woody, Woody-Pine, Body-Particulate-Smooth",Pilsner,,0
+133,117.17,133_117.17,2,2,,"Effervescence-BubbleDensity-Compact, Effervescence-BubbleSize-Large, Irritation-Carbonation-Tingle",Bitter aftertaste,bitter aftertaste,bitter
+133,120.14,133_120.14,3,3,,"Effervescence-BubbleSize-Small, Irritation-Alcohol-Warm, Bitter","Very light IPA, pine / citrus flavored",,"light, fruity, citrus, woody, pine"
+133,120.17,133_120.17,4,1,,"Effervescence-BubbleDensity-Dispersed, Sweet, Effervescence-BubbleSize-Small, Body-Particulate-Smooth","Sweet, smooth, good beer for hot day. Refreshing","smooth, refreshing","sweet, smooth"
+134,120.14,134_120.14,1,1,Vegetal,Vegetal,"Tastes like more of a lager, light beer. Would compare to a bud light or coors light flavor","tastes like a macro brand, lager, light",light
+134,Copeland,134_Copeland,2,4,Stale,Stale,Not much of a taste,bland,0
+134,120.17,134_120.17,3,2,Earthy,Earthy,"This beer was the best of the three so far, it was light and fluffy but hints of hops or barley?",light,"smooth, small bubbles, light, cereal, grain"
+134,117.17,134_117.17,4,3,Fruity,"Fruity, Afterfeel-Slippery-High",Tastes more like a wine. Fruity in flavor,,fruity
+135,120.17,135_120.17,1,3,,"Body-Particulate-Smooth, Body-Density-Light","light, lightly hoppy",light,light
+135,120.14,135_120.14,2,1,Earthy,"Body-Density-Light, Earthy","Less hoppy than 161, citrus","light, hoppy","fruity, citrus"
+135,117.17,135_117.17,3,2,"Earthy,Nutty","Afterfeel-Astringency-Drying, Earthy, Nutty","Hoppy, nutty",hoppy,nutty
+135,Copeland,135_Copeland,4,4,"Fruity,Earthy","Body-Particulate-Smooth, Fruity, Fruity-Citrus, Bitter",Hoppy,hoppy,0
+136,117.17,136_117.17,1,3,"Fruity,Woody","Woody, Fruity, Fruity-Apple, Fruity-Apple-Cider","Woody cider, very light, I feel like I could drink all day","light, easy drinking","woody, fruity, apple, cider, light"
+136,120.17,136_120.17,2,1,Fruity,"Fruity, Fruity-Citrus, Fruity-Citrus-Lemon","Citrus lemon, has more flavor",,"fruity, citrus, lemon"
+136,Copeland,136_Copeland,3,2,Nutty,"Nutty, Nutty-Walnut","Nutty walnut, stronger in flavor / refreshing",refreshing,nutty
+136,120.14,136_120.14,4,4,Woody,"Woody, Woody-Pine","Woody pine, flavor was not very good",,"woody, pine"
+137,Copeland,137_Copeland,1,3,"Earthy,Woody","Earthy, Woody, Body-Particulate-Smooth","Dry bitter, earthy, woody, bitter",,"drying, bitter, earthy, woody, bitter"
+137,117.17,137_117.17,2,1,Fruity,"Fruity, Fruity-Citrus","Light, citrusy",light,"light, fruity, citrus"
+137,120.14,137_120.14,3,4,Dairy,"Dairy, Dairy-Butter",Stale earthy,,"stale, earthy"
+137,120.17,137_120.17,4,2,"Earthy,Nutty","Nutty, Earthy",Grassy,,grassy
+138,120.14,138_120.14,1,1,"Grassy,Vegetal","Salty, Grassy, Vegetal, Vegetal-Peas","Grassy aroma, umami taste, not hoppy",,"grassy, umami"
+138,Copeland,138_Copeland,2,3,Herbacious,"Herbacious, Afterfeel-Astringency-Drying","Metallic flavor, salty aroma, drying afterfeel",,"metallic, salty, drying"
+138,120.17,138_120.17,3,4,"Earthy,Stale","Salty, Stale, Stale-Cardboard, Earthy, Earthy-Soil","Paper/cardboard aroma, earthy musty taste, slippery afterfeel",,"stale, cardboard, paper, earthy, musty, slippery"
+138,117.17,138_117.17,4,2,"Metallic,Stale","Bitter, Metallic, Salty, Stale, Stale-Paper","Green plant aroma, sour flavor, drying after feel",,"grassy, green plant, sour, drying"
+139,120.17,139_120.17,1,4,,,"Floral, slightly hoppy",hoppy,floral
+139,120.14,139_120.14,2,2,"Fruity,Metallic","Fruity, Metallic","Slightly hoppy, band-aid/penny",hoppy,"medicinal, band-aid, metallic"
+139,117.17,139_117.17,3,1,"Floral,Woody","Floral, Woody, Woody-Oak","Floral, oak? apricot",,"floral, fruity, stone fruit, apricot"
+139,Copeland,139_Copeland,4,3,"Alcoholic,Vegetal","Vegetal, Vegetal-Carrots, Alcoholic, Alcoholic-Rum","Rubber band, tart (slight), honey-wine-isn, not by much",,"medicinal, rubber, sour, sweet aromatic, honey"
+140,117.17,140_117.17,1,3,Stale,Stale,"Pale, low hops",,0
+140,120.17,140_120.17,2,2,Earthy,Earthy,"Pale, low hops, more complex than 562",,0
+140,Copeland,140_Copeland,3,1,Meaty,Meaty,"Richer and fuller, malty-er",,"heavy, thick"
+140,120.14,140_120.14,4,4,Solvent,Solvent,Less flavor than all previous,,0
+141,Copeland,141_Copeland,1,1,,"Effervescence-BubbleSize-Large, Bitter, Body-Particulate-Smooth","Sharp, light bitterness, smooth, mouthfeel was good","sharp, smooth","sharp, bitter, smooth"
+141,117.17,141_117.17,2,3,,"Sweet, Cereal Cereal-Malt","Sweet, malty flavor",,"sweet, cereal, malt"
+141,120.14,141_120.14,3,4,,,"Light, tarty, *illegible*",light,"light, sour"
+141,120.17,141_120.17,4,2,,,light aroma *illegible*,low aroma,light
+142,120.14,142_120.14,1,2,"Woody,Nutty","Woody, Nutty, Sweet, Body-Particulate-Smooth, Body-Density-Light",Taste better than corona,,0
+142,Copeland,142_Copeland,2,1,Stale,"Stale, Sweet",Tastes the best?,favorite,0
+142,120.17,142_120.17,3,4,Woody,"Salty, Woody, Woody-Pine",Kinda sour,,sour
+142,117.17,142_117.17,4,3,"Metallic,Dairy","Dairy, Dairy-Butter, Metallic",taste like rubber,,"medicinal, rubber"
+143,120.17,143_120.17,1,2,,"Sweet, Body-Density-Light",Lite and crisp,"light, crisp",light
+143,120.14,143_120.14,2,1,Grassy,"Bitter, Grassy",Little bitter,,bitter
+143,117.17,143_117.17,3,4,Floral,"Sour, Floral",Little sour,,sour
+143,Copeland,143_Copeland,4,3,Earthy,"Bitter, Earthy",Strong after taste,strong aftertaste,0
+144,117.17,144_117.17,1,4,"Fruity,Floral","Fruity, Fruity-DifferentFruits, Floral",floral,,floral
+144,120.17,144_120.17,2,2,"Fruity,Cereal","Fruity, Fruity-Citrus, Cereal, Body-Density-Light","Floral, lite, not hoppy at all",light,"floral, light"
+144,Copeland,144_Copeland,3,3,Fruity,"Fruity, Fruity-Citrus",Tastes like 562 & 161,,"floral, light"
+144,120.14,144_120.14,4,1,"Fruity,Nutty","Fruity, Fruity-Citrus, Nutty, Bitter","Fruity, great taste, more like a lite beer","good taste, tastes like a macro brand","fruity, light"
+145,Copeland,145_Copeland,1,3,"Woody,Vegetal","Vegetal, Bitter, Woody",Reminds me of a kolsch like green peas or canadian beer,,"vegetal, peas"
+145,117.17,145_117.17,2,2,"Grassy,Vegetal","Vegetal, Grassy",Lager with a sharp aftertaste,"sharp, lager",sharp
+145,120.14,145_120.14,3,1,,Body-Density-Light,Cleanest flavor,clean flavor,0
+145,120.17,145_120.17,4,4,"Woody,Stale","Woody, Stale, effervescence-bubblesize-large",0,,0
+146,120.14,146_120.14,1,4,Earthy,"Earthy, Bitter","Hoppy, earthy, bitter, dry and hoppy with an earthy, bitter aftertaste","hoppy, bitter aftertaste","earthy, bitter, drying, earthy, bitter"
+146,Copeland,146_Copeland,2,3,"Earthy,Woody","Earthy, Woody, Bitter","Earthy, woody, bitter, semi-sour with a woodsy, bitter aftertaste",bitter aftertaste,"earthy, woody, bitter, woody, bitter"
+146,120.17,146_120.17,3,2,Fruity,"Fruity, Sweet, Irritation-Cooling","Fruity, sweet, cooling, really good session type beer, slightly sweet and refreshing",refreshing,"fruity, sweet, cooling, sweet"
+146,117.17,146_117.17,4,1,Fruity,"Sour, Fruity, Sweet","Sour, fruity, sweet, somewhat sour but fruity sweet aftertaste",sweet aftertaste,"sour, fruity, sweet"
+147,120.17,147_120.17,1,2,"Fruity,Grassy","Fruity, Fruity-Apple, Fruity-Apple-SourApple, Sour, Grassy, Grassy-FreshCutGrass","Very light flavor, very little aftertaste","light, no aftertaste",light
+147,120.14,147_120.14,2,1,Woody,Waxy,"Slightly more flavor than 161, no aftertaste. Most nose smell of of the samples",no aftertaste,0
+147,117.17,147_117.17,3,4,Earthy,"Earthy, Earthy-Mold, Earthy-Soil",Lightest taste of the samples,"light, bland",light
+147,Copeland,147_Copeland,4,3,Fruity,"Fruity, Fruity-Apple, Fruity-Apple-SourApple, Fruity, Fruity-Citrus",Most aftertaste,strong aftertaste,0
+148,117.17,148_117.17,1,1,Grassy,Grassy,"Tastes like the lagers I grew up with, Rainier, Hamms, etc","tastes like a macro brand, lager",0
+148,120.17,148_120.17,2,4,Stale,Stale,"Weak, no smell. Tastes like instant beer if there were such a thing","bland, low aroma, tastes like a macro brand",light
+148,Copeland,148_Copeland,3,3,Cereal,"Cereal, Cereal-Malt","Slightly more malty, no hops",,"cereal, malt"
+148,120.14,148_120.14,4,2,Nutty,Nutty,"Nuttier, no hop smell",,nutty
+158,120.14,158_120.14,1,3,,,Tastes like a pilsner or coors light,tastes like a macro brand,light
+158,Copeland,158_Copeland,2,2,,,"Another light beer, no happiness, maybe a wheat",tastes like a macro brand,light
+158,120.17,158_120.17,3,1,,,"Smell of a sour, taste of an unflavored light sour","bland, light","sour, light"
+158,117.17,158_117.17,4,4,,,Hefe. All hefe beers taste like mildew to me,,"earthy, musty"
+159,120.17,159_120.17,1,4,,,Too light tasting,"light, bland",light
+159,120.14,159_120.14,2,3,,,Taste like coors,tastes like a macro brand,light
+159,117.17,159_117.17,3,2,,,Good flavor,good flavor,0
+159,Copeland,159_Copeland,4,1,,,The best,favorite,0
+160,117.17,160_117.17,1,4,Stale,"Effervescence-BubbleDensity-Dispersed, Stale, Body-Density-Light","Light, a little stale/flat","light, flat","light, stale, flat"
+160,120.17,160_120.17,2,1,"Floral,Cereal","Cereal, Salty, Body-Particulate-Smooth","Really good, cereal, salty, maybe floral, smooth",,"cereal, salty, smooth, floral"
+160,Copeland,160_Copeland,3,3,"Grassy,Stale","Stale, Grassy",Similar to 562 but maybe a bit more floral and grassy,,"floral, grassy"
+160,120.14,160_120.14,4,2,Floral,"Body-Particulate-Smooth, Floral, Floral-Perfume, Sweet","Good, smooth, a little sweet",smooth,"smooth, sweet"
